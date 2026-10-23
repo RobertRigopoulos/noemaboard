@@ -7,6 +7,8 @@ in real time**. No accounts, no subscriptions, no card limits, and no server you
 > NoemaBoard is an independent open-source project inspired by visual board tools such as
 > Milanote. It is not affiliated with, endorsed by, or connected to Milanote or its makers.
 
+**Try it:** https://app.noemaboard.workers.dev · **Download:** [latest release](https://github.com/RobertRigopoulos/noemaboard/releases/latest)
+
 ---
 
 ## What you can do

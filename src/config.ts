@@ -35,7 +35,7 @@ export const HOME_BOARD_ID = 'home'
 export const APP_VERSION: string = (import.meta.env.VITE_APP_VERSION as string | undefined) || '0.0.0'
 
 /** Public source repository. Set this after publishing the project (used for docs and "About" links). */
-export const REPO_URL = ''
+export const REPO_URL = 'https://github.com/RobertRigopoulos/noemaboard'
 
 export const DEFAULT_STUN = [
   { urls: 'stun:stun.l.google.com:19302' },

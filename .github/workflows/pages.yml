@@ -18,6 +18,8 @@ concurrency:
 
 jobs:
   build:
+    # Off unless the repository variable PAGES_ENABLED is 'true' (this project is hosted on Cloudflare).
+    if: vars.PAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

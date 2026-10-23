@@ -2,7 +2,7 @@
 import { app, Menu, shell, type MenuItemConstructorOptions } from 'electron'
 
 // TODO: point at the real project page once the repository is public (see electron/README.md).
-export const PROJECT_URL = 'https://github.com/'
+export const PROJECT_URL = 'https://github.com/RobertRigopoulos/noemaboard'
 
 export function buildAppMenu(opts: { onAbout: () => void }): Menu {
   const isMac = process.platform === 'darwin'
