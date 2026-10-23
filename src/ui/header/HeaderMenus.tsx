@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import {
   Archive,
+  Bug,
   Download,
   Eye,
   FileImage,
@@ -32,7 +33,8 @@ import { zoomBy, zoomTo, zoomToFit, zoomToSelection } from '../../board/actions'
 import { canOpenBoard } from '../../app/boardAccess'
 import { openBoard } from '../../app/router'
 import { useLibrary } from '../../collab/library'
-import { APP_NAME, HOME_BOARD_ID } from '../../config'
+import { APP_NAME, COMMUNITY_URL, HOME_BOARD_ID } from '../../config'
+import { openExternal } from '../../lib/desktop'
 import { useDialogs } from '../uiStore'
 import { useTheme, type Theme } from '../theme'
 import {
@@ -89,6 +91,7 @@ export function AppMenu({ isHome, boardId }: { isHome: boolean; boardId: string 
     { kind: 'separator' },
     { label: 'Settings', icon: Settings, onSelect: () => open('settings') },
     { label: 'Keyboard shortcuts', icon: Keyboard, onSelect: () => open('shortcuts'), shortcut: '?' },
+    { label: 'Report a problem…', title: 'Opens the NoemaBoard community on Discord', icon: Bug, onSelect: () => openExternal(COMMUNITY_URL) },
   )
   return (
     <Menu label={`${APP_NAME} menu`} className="app-mark" placement="bottom-start" items={items}>

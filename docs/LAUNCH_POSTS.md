@@ -36,6 +36,8 @@ Before posting:
 > It's early, and I'd love feedback from anyone who plans projects, makes moodboards, or
 > brainstorms with a team. What would you use it for?
 >
+> Found a problem or have an idea? Tell me on the NoemaBoard Discord: https://discord.gg/4gcUz2GP3w
+>
 > #productivity #opensource #design #collaboration #creativity
 
 ---
@@ -66,7 +68,8 @@ Before posting:
 > always-on sync service keeps shared boards available, and it can't read your content.
 >
 > 4/ There are desktop apps for Windows, Mac and Linux, and it works offline. Feedback very
-> welcome: what's missing for how you plan or brainstorm?
+> welcome: what's missing for how you plan or brainstorm? Bugs and ideas go here:
+> https://discord.gg/4gcUz2GP3w
 
 ---
 

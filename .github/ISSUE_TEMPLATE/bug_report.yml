@@ -1,0 +1,46 @@
+name: Report a problem
+description: Something in NoemaBoard doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please don't paste board invite links here:
+        anyone with an invite link can open and edit that board.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+      placeholder: I dragged an image into a column and it disappeared…
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      placeholder: |
+        1. Create a board
+        2. Add an image
+        3. …
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where are you using NoemaBoard?
+      options:
+        - In a web browser
+        - Windows app
+        - Mac app
+        - Linux app
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Settings → About shows it (for example 0.1.0). Browser name is also helpful.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
+      description: You can drag images into this box.

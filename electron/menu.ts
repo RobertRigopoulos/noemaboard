@@ -1,8 +1,9 @@
 /** Native application menu. Edit roles matter: without them copy/paste shortcuts fail on macOS. */
 import { app, Menu, shell, type MenuItemConstructorOptions } from 'electron'
 
-// TODO: point at the real project page once the repository is public (see electron/README.md).
 export const PROJECT_URL = 'https://github.com/RobertRigopoulos/noemaboard'
+/** Where people report problems and suggest ideas (same as COMMUNITY_URL in src/config.ts). */
+const COMMUNITY_URL = 'https://discord.gg/4gcUz2GP3w'
 
 export function buildAppMenu(opts: { onAbout: () => void }): Menu {
   const isMac = process.platform === 'darwin'
@@ -68,6 +69,7 @@ export function buildAppMenu(opts: { onAbout: () => void }): Menu {
       role: 'help',
       submenu: [
         { label: `${name} website`, click: () => void shell.openExternal(PROJECT_URL) },
+        { label: 'Report a problem…', click: () => void shell.openExternal(COMMUNITY_URL) },
         ...(!isMac ? ([{ type: 'separator' }, { label: `About ${name}`, click: opts.onAbout }] satisfies MenuItemConstructorOptions[]) : []),
       ],
     },

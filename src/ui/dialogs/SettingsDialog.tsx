@@ -2,7 +2,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Archive, Database, Info, Laptop, LayoutGrid, Monitor, Moon, Palette, Sun, Upload, User, Wifi, type LucideIcon } from 'lucide-react'
 import { create } from 'zustand'
-import { APP_NAME } from '../../config'
+import { APP_NAME, COMMUNITY_URL, REPO_URL } from '../../config'
 import { desktop } from '../../lib/desktop'
 import { useTheme, type Theme } from '../theme'
 import { downloadFullBackup, pickAndImportBackup, useExportBusy } from '../export/exportActions'
@@ -251,6 +251,17 @@ function AboutSection() {
       <p className="dlg-text">
         Visual boards for notes, to-dos, links, images, files and sketches. Teammates' devices sync directly with each other — there is no{' '}
         {APP_NAME} server, so your boards are never stored by anyone else.
+      </p>
+      <p className="dlg-text">
+        Found a problem or have an idea?{' '}
+        <a href={COMMUNITY_URL} target="_blank" rel="noopener noreferrer">
+          Tell us on Discord
+        </a>{' '}
+        or{' '}
+        <a href={`${REPO_URL}/issues`} target="_blank" rel="noopener noreferrer">
+          on GitHub
+        </a>
+        . Please never post a board's invite link there.
       </p>
       <p className="dlg-small">Fonts: Inter and Fraunces (SIL Open Font License). Icons: Lucide (ISC).</p>
     </div>

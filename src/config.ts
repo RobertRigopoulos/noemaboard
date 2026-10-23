@@ -37,6 +37,9 @@ export const APP_VERSION: string = (import.meta.env.VITE_APP_VERSION as string |
 /** Public source repository. Set this after publishing the project (used for docs and "About" links). */
 export const REPO_URL = 'https://github.com/RobertRigopoulos/noemaboard'
 
+/** Community server where people report problems and suggest ideas (a never-expiring Discord invite). */
+export const COMMUNITY_URL = 'https://discord.gg/4gcUz2GP3w'
+
 export const DEFAULT_STUN = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun.cloudflare.com:3478' },

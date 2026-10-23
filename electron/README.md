@@ -87,6 +87,4 @@ Desktop builds create web invite links pointing at
 
 ## TODO
 
-- Replace the placeholder project website (`PROJECT_URL` in `menu.ts`, `homepage` in
-  `package.json`) with the real repository URL once it is public.
 - Optional code signing: add certificates as secrets and drop `CSC_IDENTITY_AUTO_DISCOVERY=false`.
