@@ -81,8 +81,8 @@ dmg:
 linux:
   icon: build/icon.png
   category: Office
-  synopsis: Free visual boards with peer-to-peer collaboration
-  description: Free, open-source visual boards for teams. Real-time peer-to-peer collaboration with no servers, no accounts and no limits.
+  synopsis: Free visual boards with end-to-end encrypted collaboration
+  description: Free, open-source visual boards for teams. Real-time, end-to-end encrypted collaboration with no accounts and no limits.
   maintainer: NoemaBoard contributors <noreply@example.com>
   executableName: noema
   target:

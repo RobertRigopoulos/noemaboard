@@ -1,7 +1,11 @@
 # Noema desktop app
 
-The desktop app is a thin, hardened Electron shell around the same web app that is deployed to
-GitHub Pages. Everything a user creates stays on their computer and syncs peer-to-peer.
+The desktop app is a thin, hardened Electron shell around the same web app that is hosted on
+Cloudflare (see docs/HOSTING.md). Everything a user creates is saved on their computer. Shared
+boards sync directly between teammates' devices and, when the build includes a sync service
+(`VITE_DEFAULT_RELAY` from `.env.production.local` for local builds, or the `DEFAULT_RELAY`
+repository variable for release builds), also through that service, which only stores an
+end-to-end encrypted copy it can't read.
 
 ## Develop
 

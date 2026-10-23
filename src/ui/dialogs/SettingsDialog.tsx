@@ -2,7 +2,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Archive, Database, Info, Laptop, LayoutGrid, Monitor, Moon, Palette, Sun, Upload, User, Wifi, type LucideIcon } from 'lucide-react'
 import { create } from 'zustand'
-import { APP_NAME, COMMUNITY_URL, REPO_URL } from '../../config'
+import { APP_NAME, COMMUNITY_URL, DEFAULT_RELAY, REPO_URL } from '../../config'
 import { desktop } from '../../lib/desktop'
 import { useTheme, type Theme } from '../theme'
 import { downloadFullBackup, pickAndImportBackup, useExportBusy } from '../export/exportActions'
@@ -212,8 +212,12 @@ function DataSection() {
     <div>
       <h3>Data & backups</h3>
       <p className="dlg-text">
-        Your boards live on this device and on your teammates' devices. Download a backup to keep a copy or to move your boards to another
-        computer. Importing a backup merges it with what you already have, so nothing is overwritten.
+        Your boards are saved on this device.{' '}
+        {DEFAULT_RELAY
+          ? "Shared boards are also on your teammates' devices, and the sync service keeps an encrypted copy it can't read."
+          : "Shared boards are also on your teammates' devices."}{' '}
+        Download a backup to keep a copy or to move your boards to another computer. Importing a backup merges it with what you already have,
+        so nothing is overwritten.
       </p>
       <div className="row" style={{ flexWrap: 'wrap' }}>
         <button type="button" className="btn btn--primary" onClick={() => void downloadFullBackup()} disabled={!!busy}>
@@ -249,8 +253,10 @@ function AboutSection() {
         <strong>Free &amp; open source (MIT). No accounts, no limits.</strong>
       </p>
       <p className="dlg-text">
-        Visual boards for notes, to-dos, links, images, files and sketches. Teammates' devices sync directly with each other — there is no{' '}
-        {APP_NAME} server, so your boards are never stored by anyone else.
+        Visual boards for notes, to-dos, links, images, files and sketches. Your boards are saved on this device.{' '}
+        {DEFAULT_RELAY
+          ? "Shared boards also sync directly between teammates' devices and through an always-on sync service, so changes arrive even when nobody else is online. Boards are end-to-end encrypted whenever they sync, so the sync service only stores data it can't read."
+          : "Shared boards sync directly between teammates' devices, end-to-end encrypted. A board can also use a sync server your team runs, which only stores data it can't read."}
       </p>
       <p className="dlg-text">
         Found a problem or have an idea?{' '}

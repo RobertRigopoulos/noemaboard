@@ -2,7 +2,7 @@
   "name": "noema",
   "productName": "NoemaBoard",
   "version": "0.1.0",
-  "description": "Free, open-source visual boards for teams. Real-time peer-to-peer collaboration with no servers, no accounts and no limits.",
+  "description": "Free, open-source visual boards for teams. Real-time, end-to-end encrypted collaboration with no accounts and no limits.",
   "license": "MIT",
   "private": true,
   "type": "module",

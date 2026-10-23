@@ -1,8 +1,10 @@
 # Relay servers (optional)
 
-NoemaBoard needs no server: teammates' apps sync directly with each other (peer-to-peer), and free
-public signaling relays only help them find each other. That covers most teams. A **relay server**
-is an optional extra you can run yourself, for free, when you need one of these:
+NoemaBoard works without a server: teammates' apps sync directly with each other (peer-to-peer), and
+free public signaling relays only help them find each other. The public NoemaBoard (the hosted web
+app and the release downloads) also comes with an always-on relay for shared boards, so this page is
+for your own copy or your own relay. A **relay server** is an optional extra you can run yourself,
+for free, when you need one of these:
 
 | Problem                                                                             | A relay helps because…                                                                    |
 | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -81,7 +83,7 @@ reach it, and Tailscale provides the HTTPS certificate.
 
 ## Setting the relay on a board
 
-1. Open the board, then **Share → Advanced → Relay server**.
+1. Open the board, then **Share → Advanced → Sync server**.
 2. Enter the relay address, for example `wss://relay.example.com` (an `https://` address works too).
    If the relay uses an access key, add it: `wss://relay.example.com/?key=YOUR_KEY`.
 3. Press **Test**: it checks that the relay is reachable, is a NoemaBoard relay, accepts the access
@@ -90,7 +92,10 @@ reach it, and Tailscale provides the HTTPS certificate.
    invite later; it is part of invite links) uses the same relay automatically.
 
 Boards nested inside that board use the same relay unless they set their own. Clearing the field
-stops relay sync for the board (the relay keeps its encrypted copy until its operator deletes it).
+makes the board use the relay of the board it sits in again. If there is none, a shared board falls
+back to the app's built-in sync service, when your copy of NoemaBoard has one (the public web app
+and release downloads do). Only when there is neither does relay sync stop for the board. A relay
+the board no longer uses keeps its encrypted copy until its operator deletes it.
 
 The connection status for each board (connecting, connected, offline, error with a reason) is shown
 in the app. When the relay is unreachable, boards keep syncing peer-to-peer and catch up with the

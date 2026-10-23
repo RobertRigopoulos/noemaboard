@@ -39,9 +39,9 @@ in real time**. No accounts, no subscriptions, no card limits, and no server you
     again.
   - **Presentation mode.**
 
-## How collaboration works without a server
+## How collaboration works
 
-Most collaboration apps send everything through the company's servers, which is why they charge
+Most collaboration apps keep everything on the company's servers, which is why they charge
 monthly fees. NoemaBoard works differently:
 
 1. **Every board lives on the devices of the people who use it.** Your boards are saved on your
@@ -51,33 +51,42 @@ monthly fees. NoemaBoard works differently:
    - To *find* each other, the apps briefly use free public "matchmaking" services (Nostr relays and
      WebTorrent trackers).
    - These services only see an anonymous, encrypted handshake, never your content.
-3. **Sharing is a link.** Click **Share → Copy invite link** and send it to your team.
+3. **A small sync service keeps an encrypted copy of shared boards**, so changes arrive even when
+   nobody else is online. Boards are encrypted on your device before they travel, so the sync
+   service can't read them. The public NoemaBoard (the web app and the downloads) includes one that
+   runs on a free hosting plan.
+4. **Sharing is a link.** Click **Share → Copy invite link** and send it to your team.
    - Anyone with the link can open and edit that board and the boards inside it.
    - The secret key is in the part of the link after `#`, which browsers never send to any server.
 
 ### Things to know
 
-- **Someone who has the board must be online for changes to reach others.**
-  - If you edit while your teammates are offline, they get your changes the next time you are
-    both online.
-  - To keep boards always available, leave the desktop app running on one or two computers: turn
-    on *Settings → Desktop → Keep boards online when the window is closed*.
-  - Or set up the optional [sync server](docs/RELAY.md). It is free to self-host and end-to-end
-    encrypted, so the server can't read your boards.
+- **Shared boards stay available.** In the web app and the downloads, your changes are saved on
+  your device and reach the sync service as soon as you're online. Teammates get them the next
+  time they open the board, even if you're offline by then.
+  - If the sync service's free daily allowance is ever used up, it pauses until the next day.
+    Boards keep working, and devices keep syncing directly.
+  - Running your own copy without a sync service? Then someone who has the board must be online
+    for changes to reach others. Leave the desktop app running on one or two computers (*Settings
+    → Desktop → Keep boards online when the window is closed*), or set up your own
+    [sync server](docs/RELAY.md). It is free to self-host and can't read your boards either.
 - **A few strict networks block direct connections.** Some company networks and mobile hotspots
   are like this.
-  - If a teammate can't connect, add a free TURN server in *Settings → Network*, or use the
-    optional sync server.
+  - Shared boards still sync live through the sync service there, cursors included. If the app
+    warns that some teammates can't connect directly, you can also add a free TURN server in
+    *Settings → Network*.
 - **Access works like a key.** Anyone with the invite link can edit.
   - To remove someone, copy the content into a new board and share the new link.
   - People keep the copies already on their own devices.
-- **Many people at once.** Large teams can share boards. A single board works best with up to
-  about 25–30 people editing *at the same moment*. The sync server lifts this limit.
+- **Many people at once.** Large teams can share boards. Directly between devices, a single board
+  works best with up to about 25–30 people editing *at the same moment*. The sync service (built
+  into the public app, or your own [sync server](docs/RELAY.md)) lifts this limit.
 
 ## Getting started with your team
 
 1. **Install the desktop app** (Windows, macOS or Linux) from the
-   [Releases page](../../releases/latest), or use the web version (see *Publish your own copy*).
+   [Releases page](../../releases/latest), or use the web version at
+   https://app.noemaboard.workers.dev/app/.
    - Windows may warn about an "unrecognised app". Click **More info → Run anyway**: the app isn't
      code-signed yet.
    - macOS: open the app once, then go to **System Settings → Privacy & Security → Open Anyway**.
@@ -89,16 +98,21 @@ monthly fees. NoemaBoard works differently:
 
 ## Publish your own copy (free)
 
-GitHub hosts the downloads and a web version for free. You only do this once:
+GitHub builds and hosts the downloads for free. The web app and its encrypted sync service run on
+Cloudflare's free plan. You only do this once:
 
-1. Create a free account at [github.com](https://github.com). If you already have other GitHub
-   Pages sites on your account, create a free *organization* for this app instead. Each web app
-   should have its own address: browsers treat all Pages sites of one account as the same website.
-2. Create a new **public** repository (for example `noema`) and upload this folder to it.
+1. Create a free account at [github.com](https://github.com).
+2. Create a new **public** repository (for example `noemaboard`) and upload this folder to it.
    [GitHub Desktop](https://desktop.github.com) is the easiest way.
-3. In the repository, open **Settings → Pages** and set **Source** to **GitHub Actions**. Every push
-   to `main` now deploys the web app to `https://<your-name>.github.io/<repository>/`, and invite
-   links point to it, so teammates can join from any browser without installing anything.
+3. Host the web app together with its sync service on Cloudflare's free plan: follow
+   [docs/HOSTING.md](docs/HOSTING.md) (`npm run deploy:cloudflare`). Then add two repository
+   variables (**Settings → Secrets and variables → Actions → Variables**), so installers built by
+   GitHub link to your web app and use your sync service:
+   - `PUBLIC_URL`: `https://app.<your-subdomain>.workers.dev/app/`
+   - `DEFAULT_RELAY`: `https://app.<your-subdomain>.workers.dev/relay` (the full address, not
+     `same-origin`)
+
+   Invite links then open in any browser, so teammates can join without installing anything.
 4. To build installers, create a tag such as `v0.1.0` (in GitHub: **Releases → Draft a new release
    → Choose a tag → v0.1.0 → Publish**). GitHub Actions then builds:
    - the Windows installer and portable `.exe`
@@ -153,8 +167,15 @@ relay            optional self-hosted sync server (Node.js, Docker, Cloudflare W
 ## Privacy & security
 
 - No accounts, no tracking, no analytics.
-- Board content travels only between your team's devices, over DTLS-encrypted WebRTC channels.
-  The optional relay stores only AES-GCM ciphertext.
+- Board content travels directly between your team's devices over encrypted (DTLS) WebRTC
+  connections.
+- In the public app (the hosted web app and the release downloads), shared boards also sync
+  through NoemaBoard's sync service, so changes arrive even when nobody else is online. Your device
+  encrypts everything before sending it (AES-256-GCM, with a key that comes from the invite link),
+  so the sync service only stores and passes on data it can't read. Like the matchmaking services,
+  it does see your IP address, and how much encrypted data each board has and when it changes.
+- Sharing a board also shares every board inside it. Home, and boards that aren't shared, stay on
+  your device (unless you set your own sync server for a board in *Share → Advanced*).
 - Matchmaking services see that *someone* is looking for peers under a random, derived room id,
   plus your IP address. Peers also see each other's IP addresses, as in any peer-to-peer app.
 - Link previews are fetched only by the desktop app of the person who added the link, with

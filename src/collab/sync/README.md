@@ -2,7 +2,10 @@
 
 Keeps every board shared with teammates in sync directly between their devices (WebRTC through
 [Trystero](https://github.com/dmotz/trystero)), and keeps tabs/windows of one profile in sync
-through a `BroadcastChannel`. No server stores or relays board content.
+through a `BroadcastChannel`. No server can read board content on this path: it travels over
+encrypted (DTLS) WebRTC data channels, and a TURN server, if one is added in Settings → Network, only
+forwards that encrypted traffic. The end-to-end encrypted relay (`src/collab/relay/`) runs alongside
+it.
 
 | File           | Role                                                                           |
 | -------------- | ------------------------------------------------------------------------------ |

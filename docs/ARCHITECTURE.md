@@ -1,9 +1,12 @@
 # Architecture
 
 NoemaBoard is a local-first visual board app (infinite canvas with notes, images, links, to-dos,
-columns, nested boards, lines, comments, sketches) with real-time collaboration that needs **no
-server**. Teammates' apps talk to each other directly (WebRTC); free public relays are only used
-so peers can find each other. An optional self-hosted relay adds always-on availability.
+columns, nested boards, lines, comments, sketches) with real-time collaboration. Teammates' apps
+talk to each other directly (WebRTC); free public relays are only used so peers can find each
+other. Shared boards can also sync through an end-to-end encrypted relay (the "sync service"),
+which keeps them available while nobody else is online and only stores encrypted copies it can't
+read. Builds with `VITE_DEFAULT_RELAY` set, such as the hosted web app and release builds, have one
+built in for shared boards (`src/config.ts`), and any board can name its own.
 
 ```
 ┌──────────────── one app instance (browser tab or desktop app) ────────────────┐
@@ -58,12 +61,17 @@ so peers can find each other. An optional self-hosted relay adds always-on avail
 * Same-device tabs/windows sync via `BroadcastChannel`.
 * Limits: a full mesh works well up to ~25–30 people active on the same shared board at once.
 
-## Optional relay (`relay/` server, `src/collab/relay/` client)
+## Relay / sync service (`relay/` server, `src/collab/relay/` client)
 
-For boards that must be available while nobody else is online, or when strict NATs block P2P.
-A "blind" relay stores an append-only log of AES-GCM encrypted Yjs updates + encrypted snapshots
-and encrypted blobs; it cannot read boards. Runs with `node` (no native deps, `node:sqlite`),
-Docker, or inside the desktop app ("host on this computer" for LAN use).
+`effectiveRelay()` in src/collab/relay/manager.ts picks the relay a board syncs through: the relay
+set on the board itself, else the nearest parent's. If neither is set and the board or one of its
+parents is shared, it uses the build's `DEFAULT_RELAY` (`VITE_DEFAULT_RELAY`: `same-origin` on the
+hosted web app, the `DEFAULT_RELAY` repository variable for release builds). Home never uses a
+relay; a board that isn't shared only uses one if a relay was set on it or on a board it sits in.
+The relay keeps boards available while nobody else is online and works where strict NATs block
+P2P. A "blind" relay stores an append-only log of AES-GCM encrypted Yjs updates + encrypted
+snapshots and encrypted blobs; it cannot read boards. Runs with `node` (no native deps,
+`node:sqlite`), Docker, or on Cloudflare Workers with Durable Objects (`relay/cloudflare/`).
 
 ## Local persistence
 
@@ -95,5 +103,8 @@ electron-builder (Windows NSIS, macOS dmg, Linux AppImage) in GitHub Actions.
 
 ## Web app
 
-The same build is deployed for free to GitHub Pages so invitees can join from a browser
-without installing anything.
+The web build (made with `--mode cloudflare`, so shared boards use the built-in end-to-end
+encrypted sync service at `/relay`) is deployed for free to Cloudflare Workers together with that
+sync service (`npm run deploy:cloudflare`, see docs/HOSTING.md), so invitees can join from a
+browser without installing anything. GitHub Pages can optionally host a copy of the front page only
+(`.github/workflows/pages.yml`, off unless the repository variable `PAGES_ENABLED` is `true`).

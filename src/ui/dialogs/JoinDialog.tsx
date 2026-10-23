@@ -1,7 +1,7 @@
 /** Paste an invite link to join a shared board. */
 import { useId, useState } from 'react'
 import { LoaderCircle } from 'lucide-react'
-import { APP_NAME } from '../../config'
+import { APP_NAME, DEFAULT_RELAY } from '../../config'
 import { parseInviteLink } from '../../collab/links'
 import { joinWithConfirmation } from '../../app/joinFlow'
 import { openBoard } from '../../app/router'
@@ -15,7 +15,7 @@ export function JoinDialog({ open, onClose }: { open: boolean; onClose: () => vo
       onClose={onClose}
       size="sm"
       title="Join a board"
-      description="Paste an invite link a teammate sent you. The board appears on your Home and syncs directly with their devices."
+      description={`Paste an invite link a teammate sent you. The board appears on your Home and syncs with your teammates${DEFAULT_RELAY ? "' devices and through the sync service" : ''}, end-to-end encrypted.`}
     >
       <JoinForm onDone={onClose} />
     </Dialog>

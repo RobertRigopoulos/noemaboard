@@ -3,7 +3,7 @@
 NoemaBoard is hosted on **Cloudflare's free Workers plan**. One deployment provides:
 
 - **The web app**, so teammates can join from any browser without installing anything:
-  `https://app.<your-subdomain>.workers.dev`
+  `https://app.<your-subdomain>.workers.dev/app/` (the front page is at the bare address)
 - **An always-on sync server** at `…/relay`, so shared boards stay available even when nobody
   else is online.
   - Board contents are end-to-end encrypted with the key in each invite link, so Cloudflare
@@ -52,8 +52,8 @@ Then rebuild the apps with the key added to the relay address
 Local desktop builds read `.env.production.local`, which is not committed:
 
 ```
-VITE_PUBLIC_URL=https://noema.<your-subdomain>.workers.dev/
-VITE_DEFAULT_RELAY=https://noema.<your-subdomain>.workers.dev/relay
+VITE_PUBLIC_URL=https://app.<your-subdomain>.workers.dev/app/
+VITE_DEFAULT_RELAY=https://app.<your-subdomain>.workers.dev/relay
 ```
 
 For installers built by GitHub Actions, set the same two values as repository variables:

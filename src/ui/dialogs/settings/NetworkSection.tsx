@@ -1,6 +1,7 @@
 /** Peer-to-peer settings: on/off, TURN servers, extra Nostr relays and BitTorrent trackers. */
 import { useId, useState } from 'react'
 import { Info, Plus, X } from 'lucide-react'
+import { DEFAULT_RELAY } from '../../../config'
 import { useNetworkSettings } from '../../../collab/sync/settings'
 import { toast } from '../../toast'
 import { MAX_FIELD, MAX_TURN_ROWS, parseTurnRows, parseWssList, toTurnRows, type TurnRow } from './networkValidation'
@@ -35,8 +36,10 @@ export function NetworkSection() {
         <span className="switch__text">
           <strong>Peer-to-peer sync</strong>
           <span>
-            Sync shared boards directly with teammates' devices. Turn off to keep everything on this device (boards with a sync server still use
-            it).
+            Sync shared boards directly with teammates' devices.{' '}
+            {DEFAULT_RELAY
+              ? 'When this is off, shared boards still sync through the sync service, end-to-end encrypted.'
+              : 'Turn off to keep everything on this device (boards with a sync server still use it).'}
           </span>
         </span>
       </label>
@@ -49,8 +52,9 @@ export function NetworkSection() {
           <Info size={16} aria-hidden />
           <span>
             Teammates normally connect directly. Some company, school, hotel or mobile networks block direct connections — then a TURN
-            server relays the connection (it stays end-to-end encrypted). Add one if teammates can see each other online but changes never
-            arrive. You can run your own (for example coturn) or use a hosted TURN service.
+            server can pass the connection along (it stays end-to-end encrypted). Boards that use a sync service keep syncing through it
+            either way. Add a TURN server if the app warns that some teammates can't connect directly. You can run your own (for example
+            coturn) or use a hosted TURN service.
           </span>
         </div>
         {rows.map((r, i) => (

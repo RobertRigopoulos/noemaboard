@@ -28,7 +28,7 @@ npm start                                # listens on :8787, stores data in ./da
 
 Check it: `curl http://localhost:8787/healthz`.
 
-Then, in NoemaBoard, open a board → **Share** → **Advanced** → **Relay server**, enter the address
+Then, in NoemaBoard, open a board → **Share** → **Advanced** → **Sync server**, enter the address
 (for example `wss://relay.example.com`) and press **Test**. Everyone on the board (and on every
 board nested in it) then syncs through it automatically.
 

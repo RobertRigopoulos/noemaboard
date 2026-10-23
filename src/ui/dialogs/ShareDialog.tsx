@@ -2,7 +2,7 @@
 import { useEffect, useId, useMemo, useState, useSyncExternalStore } from 'react'
 import type * as Y from 'yjs'
 import { Check, ChevronRight, CircleAlert, CircleCheck, Copy, Info, LoaderCircle, LogOut, MessageSquareText, Share } from 'lucide-react'
-import { APP_NAME, HOME_BOARD_ID, PUBLIC_URL } from '../../config'
+import { APP_NAME, DEFAULT_RELAY, HOME_BOARD_ID, PUBLIC_URL } from '../../config'
 import type { BoardContextValue } from '../../board/BoardContext'
 import { createInvite, leaveBoard } from '../../collab/boards'
 import { docs } from '../../collab/docs'
@@ -117,12 +117,14 @@ function ShareBody({ ctx, title, onClose }: { ctx: BoardContextValue; title: str
   // Shared through a parent board: everyone in the parent can already open this one.
   const scope = useMemo(() => syncScope(ctx.boardId, entries), [ctx.boardId, entries])
   const parentScopeTitle = scope && scope !== ctx.boardId ? entries[scope]?.title || 'a parent board' : null
+  // Once shared, a board syncs through its own or a parent's server, else the built-in one.
+  const syncServer = !!(effectiveRelay(ctx.boardId, entries, '') || DEFAULT_RELAY)
 
   return (
     <>
       <p className="dlg-text">
-        Anyone with this link can view and edit this board and every board inside it. Boards sync directly between your teammates' devices —
-        no account, no server, no limits.
+        Anyone with this link can view and edit this board and every board inside it. Changes sync live between your teammates' devices
+        {syncServer ? ' and through an always-on sync service, all end-to-end encrypted' : ', end-to-end encrypted'}. No account, no limits.
       </p>
 
       {parentScopeTitle && (
@@ -295,7 +297,11 @@ function RelayField({ ctx, inputId }: { ctx: BoardContextValue; inputId: string 
   const [testing, setTesting] = useState(false)
   const trimmed = value.trim()
   const valid = validRelayUrl(trimmed)
-  const inherited = !saved ? effectiveRelay(ctx.boardId, entries) : null
+  // A relay on the board's own library entry (from its invite, until the content arrives) is not a parent's.
+  const entry = entries[ctx.boardId]
+  const own = !saved && typeof entry?.relay === 'string' && !!entry.relay.trim()
+  const inherited = !saved && !own && entry?.parentId ? effectiveRelay(entry.parentId, entries, '') : null
+  const builtIn = !saved && !own && !inherited ? effectiveRelay(ctx.boardId, entries) : null
 
   // Follow changes made by teammates while the field is untouched.
   useEffect(() => setValue(saved), [saved])
@@ -368,6 +374,12 @@ function RelayField({ ctx, inputId }: { ctx: BoardContextValue; inputId: string 
         <span className="field__hint">
           This board already syncs through the server set on a parent board ({parseRelayUrl(inherited)?.display ?? 'sync server'}). Set one here
           only to use a different server.
+        </span>
+      )}
+      {builtIn && (
+        <span className="field__hint">
+          This board syncs through the built-in sync service ({parseRelayUrl(builtIn)?.display ?? 'sync service'}). Set one here only to use
+          a different server.
         </span>
       )}
       {status && !result && (
@@ -448,7 +460,7 @@ function LeaveBoard({ ctx, title, onClose }: { ctx: BoardContextValue; title: st
           <CircleAlert size={16} aria-hidden />
           <div>
             <p style={{ margin: '0 0 8px' }}>
-              Leave “{title}”? It will be deleted from this device, including any changes that have not synced to a teammate yet.
+              Leave “{title}”? It will be deleted from this device, including any changes that haven't synced yet.
             </p>
             <div className="row">
               <button type="button" className="btn" onClick={() => setConfirming(false)} data-autofocus>

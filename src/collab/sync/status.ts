@@ -42,8 +42,8 @@ export const SYNC_PROBLEMS: Record<SyncProblemKey, string> = {
   'tab-version': 'The app was updated in another tab or window. Reload this one to keep them in sync.',
   reload: 'A new version of the app was published while this window was open. Reload the app to keep syncing.',
   start: "Live sync couldn't start. Your changes are saved on this device; reload the app to connect again.",
-  webrtc: "This browser can't make direct connections to teammates, so live collaboration is off.",
-  signaling: "Can't reach the matchmaking servers. Check your internet connection.",
+  webrtc: "This browser can't connect directly to teammates. Boards that use a sync service still sync through it; other shared boards don't sync here.",
+  signaling: "Can't reach the servers that connect teammates directly. Check your internet connection. Boards that use a sync service still sync through it.",
   turn: "Some teammates can't connect directly. Add a TURN server in Settings → Network.",
   full: 'Too many people are connected to a shared board at once (limit 30). Some changes will arrive late.',
 }

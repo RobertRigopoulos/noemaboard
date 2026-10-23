@@ -1,7 +1,7 @@
 /**
  * Once per board opening (never on Home), tells the person using the app how many new @mentions of
  * them the board holds: comment messages that list them and mention chips in rich text. What was seen
- * is remembered per board in this browser only; nothing is sent anywhere (there is no server).
+ * is remembered per board in this browser only; nothing about it is sent anywhere.
  */
 import { useEffect } from 'react'
 import type { BoardContextValue } from '../../board/BoardContext'

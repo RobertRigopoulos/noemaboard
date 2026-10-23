@@ -22,8 +22,9 @@ Before posting:
 > What makes it different:
 > - **Free for everyone.** No accounts, no subscription, no "upgrade to add more cards". There
 >   are no limits.
-> - **Your boards stay with you.** Boards live on your own devices and sync directly between
->   teammates, end-to-end encrypted.
+> - **Your boards stay yours.** Boards live on your own devices and sync directly between
+>   teammates, end-to-end encrypted. A small sync service keeps an encrypted copy of shared
+>   boards so they're always within reach, and it can't read them.
 > - **Share with a link.** Send it to your team and they can join from any browser, no sign-up.
 > - **Works offline**, with desktop apps for Windows, Mac and Linux.
 > - **Open source**, so anyone can check how it works or host their own.
