@@ -1,0 +1,252 @@
+/* Column card. The shell is frame 'bare', so the column draws its own panel. */
+
+.col {
+  /* Looks like a translucent surface-3 panel but is opaque, so the canvas dots stay hidden. */
+  --col-bg: color-mix(in srgb, var(--text) 5%, color-mix(in srgb, var(--surface-3) 60%, var(--canvas-bg)));
+  --col-edge: color-mix(in srgb, var(--border-strong) 45%, transparent);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 72px;
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--col-bg);
+  box-shadow: inset 0 0 0 1px var(--col-edge);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .col {
+    --col-bg: color-mix(in srgb, var(--surface) 55%, var(--canvas-bg));
+    --col-edge: color-mix(in srgb, var(--border) 80%, transparent);
+  }
+}
+:root[data-theme='dark'] .col {
+  --col-bg: color-mix(in srgb, var(--surface) 55%, var(--canvas-bg));
+  --col-edge: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.card-shell--column[data-color] > .col {
+  --col-bg: color-mix(in srgb, var(--tint) 88%, var(--canvas-bg));
+  box-shadow:
+    inset 0 3px 0 var(--strong),
+    inset 0 0 0 1px var(--col-edge);
+}
+/* Light text on the dark column, scoped to the column's own chrome (cards inside keep theirs). */
+.card-shell--column[data-color='dark'] > .col > .col__header,
+.card-shell--column[data-color='dark'] > .col > .col__body > .col__empty,
+.card-shell--column[data-color='dark'] > .col > .col__stack.is-empty {
+  --text: #f2f3f5;
+  --text-muted: #a3a9b3;
+  --border-strong: rgba(255, 255, 255, 0.28);
+}
+
+.card-shell--column.is-selected::after {
+  border-radius: 7px;
+}
+/* The insertion line is the main drop cue; keep the frame highlight quiet. */
+.card-shell--column.is-drop-target::after {
+  border-radius: 7px;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--select) 55%, transparent);
+  background: transparent;
+}
+
+/* ---------- header ---------- */
+
+.col__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  margin: -2px 0 6px;
+  padding: 0 0 0 4px;
+  color: var(--text);
+}
+
+.col__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+.col__title.is-placeholder {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.col__title-input {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  margin-left: -4px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  outline: 2px solid var(--select);
+  outline-offset: 0;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.col__title-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.card-shell--column[data-color='dark'] .col__title-input {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.col__count {
+  flex-shrink: 0;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.col__toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+}
+.col__toggle:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--text) 9%, transparent);
+  color: var(--text);
+}
+.col__toggle:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---------- body ---------- */
+
+.col__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  /* Cards inside must not inherit the column's color tokens. */
+  --strong: initial;
+  --tint: initial;
+}
+
+.col__item {
+  position: relative;
+}
+.col__item[data-insert]::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--select);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--select) 22%, transparent);
+  pointer-events: none;
+  /* Above resting siblings, below the dragged card (z-index 10 on its shell). */
+  z-index: 5;
+}
+.col__item[data-insert='before']::before {
+  top: -5.5px;
+}
+.col__item[data-insert='after']::before {
+  bottom: -5.5px;
+}
+
+.col__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 8px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  text-align: center;
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+.col__empty.is-active {
+  border-color: var(--select);
+  background: var(--select-soft);
+  color: var(--select);
+}
+
+/* ---------- collapsed: a small stack of paper ---------- */
+
+.col__stack {
+  position: relative;
+  height: 36px;
+  margin: 0 2px;
+}
+.col__sheet {
+  position: absolute;
+  height: 26px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.col__sheet--1 {
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.col__sheet--2 {
+  top: 5px;
+  left: 6px;
+  right: 6px;
+  z-index: 2;
+  opacity: 0.85;
+}
+.col__sheet--3 {
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  z-index: 1;
+  opacity: 0.7;
+}
+.col__stack.is-empty .col__sheet--1 {
+  background: transparent;
+  box-shadow: none;
+  border: 1.5px dashed var(--border-strong);
+}
+.col__stack.is-active .col__sheet--1 {
+  box-shadow:
+    0 0 0 2px var(--select),
+    var(--shadow-card);
+  color: var(--select);
+}

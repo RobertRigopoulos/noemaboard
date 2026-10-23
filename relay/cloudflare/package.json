@@ -1,0 +1,19 @@
+{
+  "name": "noema-relay-cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NoemaBoard relay on Cloudflare Workers + SQLite Durable Objects (free plan friendly). End-to-end encrypted: the relay never sees board contents.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261001.1",
+    "typescript": "~6.0.3",
+    "wrangler": "^4.140.0"
+  }
+}

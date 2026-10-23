@@ -1,0 +1,8 @@
+{
+ "text": "NoemaBoard",
+ "font": "Fraunces (SIL OFL 1.1), variable",
+ "settings": { "opsz": 56, "wght": 560, "SOFT": 80, "WONK": 0 },
+ "measured": [0, 1531, 2656, 3656, 5469, 6532, 7907, 9032, 10095, 11001, 12189],
+ "tweaks": { "No": -20, "aB": 60 },
+ "note": "measured = kerned pen positions in font units (upem 2000) from Chromium/HarfBuzz via tools/measure.cjs; tweaks = extra space added between a pair (No -10/1000 em, aB +30/1000 em) so Noema|Board splits gently"
+}

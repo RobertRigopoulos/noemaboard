@@ -1,0 +1,208 @@
+/* Lines/arrows between cards: SVG below the cards, labels, and a handle overlay above them. */
+
+.lines-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noema-line {
+  --line-color: var(--text-2);
+}
+.noema-line__stroke {
+  fill: none;
+  stroke: var(--line-color);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.noema-line__arrow {
+  fill: var(--line-color);
+  stroke: var(--line-color);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.noema-line__halo {
+  fill: none;
+  stroke: var(--select);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+.noema-line:hover .noema-line__halo {
+  opacity: 0.2;
+}
+.noema-line.is-peer-selected .noema-line__halo {
+  stroke: var(--peer-color, var(--select));
+  opacity: 0.35;
+}
+.noema-line.is-selected .noema-line__halo {
+  stroke: var(--select);
+  opacity: 0.4;
+}
+.noema-line__hit {
+  fill: none;
+  stroke: transparent;
+  /* ~12 screen pixels around the visible stroke at any zoom (--line-hit is set per zoom level) */
+  stroke-width: calc(var(--line-hit, 12px) + var(--line-t, 2) * 1px);
+  stroke-linecap: round;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+.noema-line--draft .noema-line__stroke,
+.noema-line--draft .noema-line__arrow {
+  opacity: 0.8;
+}
+
+/* Labels sit on the line, below cards */
+.lines-labels {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.line-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  max-width: 260px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+}
+.line-label.is-selected {
+  box-shadow: 0 0 0 1.5px var(--select);
+}
+
+/* Handles, connector and label editor: above every card */
+.lines-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 1500000;
+  pointer-events: none;
+}
+.lines-overlay__svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.line-handle {
+  pointer-events: all;
+  cursor: grab;
+}
+.line-handle:active {
+  cursor: grabbing;
+}
+.line-handle__hit {
+  fill: transparent;
+}
+.line-handle__dot {
+  fill: var(--surface);
+  stroke: var(--select);
+  transition: fill 0.1s ease;
+}
+.line-handle.is-attached .line-handle__dot {
+  fill: var(--select);
+  stroke: var(--surface);
+}
+.line-handle:hover .line-handle__dot {
+  fill: var(--select);
+}
+.line-handle--bend .line-handle__dot {
+  fill: var(--surface);
+  stroke: var(--select);
+}
+.line-handle--bend:hover .line-handle__dot {
+  fill: var(--select);
+}
+.line-attach-target {
+  fill: var(--select-soft);
+  stroke: var(--select);
+  pointer-events: none;
+}
+
+.line-connector {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid var(--select);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--select);
+  box-shadow: var(--shadow-card);
+  transform-origin: center;
+  pointer-events: auto;
+  cursor: crosshair;
+  touch-action: none;
+}
+.line-connector:hover {
+  background: var(--select);
+  color: var(--surface);
+}
+.line-connector:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 2px;
+}
+
+.line-label-input {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 64px;
+  max-width: 320px;
+  height: 22px;
+  padding: 0 8px;
+  border: 1.5px solid var(--select);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 0 0 4px var(--select-soft);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.line-label-input:focus {
+  outline: none;
+}
+.line-label-input::placeholder {
+  color: var(--text-muted);
+}
+
+body.is-drawing-line,
+body.is-drawing-line * {
+  cursor: crosshair !important;
+}

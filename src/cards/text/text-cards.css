@@ -1,0 +1,559 @@
+/* Note, to-do and document cards, plus the full-screen document editor. */
+
+/* ---------- shared ---------- */
+
+.text-card {
+  padding: 14px 16px;
+  min-height: 24px;
+}
+.card[data-color] > .text-card {
+  padding-top: 17px;
+}
+
+/* ---------- to-do ---------- */
+
+.todo-card {
+  padding: 12px 14px 13px;
+}
+.card[data-color] > .todo-card {
+  padding-top: 15px;
+}
+.todo-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.todo-card__title,
+.todo-card__title-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.todo-card__title-input {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  outline: none;
+}
+.todo-card__title-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.todo-card__title-input:focus-visible {
+  box-shadow: 0 2px 0 var(--select-soft);
+}
+
+.todo-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 9px;
+}
+.todo-card__bar {
+  flex: 1 1 auto;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  overflow: hidden;
+}
+.todo-card__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--success);
+  transition: width 0.25s ease;
+}
+.todo-card__count {
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.todo-card.is-complete .todo-card__count {
+  color: var(--success);
+}
+/* A to-do card is mostly a checklist: give items a little more air than in notes. */
+.rich-text--todo .rich-text__content li[data-type='taskItem'] {
+  margin: 4px 0;
+}
+.rich-text--todo .rich-text__content > ul[data-type='taskList']:first-child > li:first-child {
+  margin-top: 0;
+}
+
+.todo-card__overdue,
+.doc-tile__overdue {
+  flex: none;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--danger) 13%, transparent);
+  color: color-mix(in srgb, var(--danger) 85%, var(--text));
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.todo-card__head .todo-card__overdue {
+  align-self: center;
+}
+
+.todo-card__menu-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 22px;
+  margin: -3px -6px -3px 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    background-color 0.12s ease;
+}
+.todo-card__head .todo-card__menu-btn {
+  align-self: center;
+}
+/* Shown on hover, when the card is selected (touch has no hover) or when reached by keyboard. */
+.card:hover .todo-card__menu-btn,
+.card.is-selected .todo-card__menu-btn,
+.card-shell.is-selected .todo-card__menu-btn,
+.todo-card__menu-btn:focus-visible,
+.todo-card__menu-btn.is-open {
+  opacity: 1;
+}
+@media (hover: none) {
+  .todo-card__menu-btn {
+    opacity: 1;
+  }
+}
+.todo-card__menu-btn:hover,
+.todo-card__menu-btn.is-open {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text);
+}
+.todo-card__menu-btn:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 1px;
+}
+
+.todo-menu {
+  z-index: 2700;
+  min-width: 190px;
+  padding: 4px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-pop);
+  outline: none;
+}
+.todo-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font: 400 13px var(--font-ui);
+  text-align: left;
+}
+.todo-menu__item svg {
+  flex: none;
+  color: var(--text-2);
+}
+.todo-menu__item:hover:not(:disabled),
+.todo-menu__item:focus-visible {
+  background: var(--surface-hover);
+  outline: none;
+}
+.todo-menu__item:disabled {
+  opacity: 0.45;
+}
+.todo-menu__item--danger:not(:disabled),
+.todo-menu__item--danger:not(:disabled) svg {
+  color: var(--danger);
+}
+.todo-menu__check {
+  margin-left: auto;
+  color: var(--select) !important;
+}
+
+/* Hide completed: gone when not editing; dimmed while editing so the caret never sits in hidden text.
+   A finished task with an open sub-task stays, so the sub-task can still be seen and ticked
+   (countHiddenDone in tasks.ts counts by the same rule). */
+.todo-card.is-hiding-done
+  .rich-text__static
+  li[data-type='taskItem'][data-checked='true']:not(:has(li[data-type='taskItem'][data-checked='false'])) {
+  display: none;
+}
+.todo-card.is-hiding-done
+  .rich-text.is-live
+  li[data-type='taskItem'][data-checked='true']:not(:has(li[data-type='taskItem'][data-checked='false'])) {
+  opacity: 0.45;
+}
+.todo-card__hidden {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 2px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.todo-card__show {
+  padding: 0 2px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--link);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.todo-card__show:hover {
+  text-decoration: underline;
+}
+.todo-card__show:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 1px;
+}
+
+/* ---------- document tile ---------- */
+
+.doc-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 168px;
+  padding: 14px 15px 12px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+  transition: box-shadow 0.12s ease;
+}
+.doc-tile:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+.card-shell[data-color] .doc-tile {
+  background: var(--tint);
+  box-shadow:
+    inset 0 4px 0 var(--strong),
+    var(--shadow-card);
+  padding-top: 17px;
+}
+.card-shell[data-color] .doc-tile:hover {
+  box-shadow:
+    inset 0 4px 0 var(--strong),
+    var(--shadow-card-hover);
+}
+.card-shell[data-color='dark'] .doc-tile {
+  color: #f2f3f5;
+  --text: #f2f3f5;
+  --text-2: #d0d3d8;
+  --text-muted: #9ea4ae;
+  --border: rgba(255, 255, 255, 0.14);
+}
+
+.doc-tile__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.doc-tile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--strong, var(--select)) 14%, transparent);
+  color: var(--strong, var(--select));
+}
+.card-shell[data-color='dark'] .doc-tile__icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f2f3f5;
+}
+.doc-tile__open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    background-color 0.12s ease;
+}
+.doc-tile:hover .doc-tile__open,
+.doc-tile.is-selected .doc-tile__open,
+.doc-tile__open:focus-visible {
+  opacity: 1;
+}
+.doc-tile__open:hover {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text);
+}
+.doc-tile__title {
+  margin: 0 0 6px;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.doc-tile__title.is-placeholder {
+  color: var(--text-muted);
+}
+.doc-tile__preview {
+  flex: 1 1 auto;
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.doc-tile__preview.is-empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.doc-tile__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  padding-top: 9px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text-muted);
+}
+.card-shell[data-color] .doc-tile__meta {
+  border-top-color: color-mix(in srgb, var(--text) 12%, transparent);
+}
+.doc-tile__kind {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.doc-tile__words {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* Right-aligned next to the word count. */
+.doc-tile__overdue {
+  margin-left: auto;
+  padding: 1px 6px;
+  font-size: 10.5px;
+}
+
+/* ---------- full-screen document editor ---------- */
+
+.doc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas-bg);
+  color: var(--text);
+  outline: none;
+  animation: doc-overlay-in 0.14s ease-out;
+}
+@keyframes doc-overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+.doc-overlay__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 52px;
+  padding: 0 12px 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.doc-overlay__crumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.doc-overlay__badge {
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.doc-overlay__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.doc-overlay__peers {
+  display: flex;
+  align-items: center;
+}
+.doc-overlay__peer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: -6px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.doc-overlay__peer:first-child {
+  margin-left: 0;
+}
+.doc-overlay__peer--more {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+.doc-overlay__count {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.doc-overlay__scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 32px 16px 96px;
+}
+.doc-page {
+  position: relative;
+  max-width: 760px;
+  min-height: calc(100% - 8px);
+  margin: 0 auto;
+  padding: 64px 76px 80px;
+  border-radius: 4px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.doc-page[data-color] {
+  box-shadow:
+    inset 0 5px 0 var(--strong),
+    var(--shadow-card);
+}
+.doc-page__title {
+  display: block;
+  width: 100%;
+  margin: 0 0 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  overflow-wrap: anywhere;
+}
+.doc-page__title.is-placeholder {
+  color: var(--text-muted);
+}
+.doc-page__title-input {
+  resize: none;
+  overflow: hidden;
+  outline: none;
+}
+.doc-page__title-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+@media (max-width: 900px) {
+  /* The formatting toolbar gets a row of its own under the title bar. */
+  .doc-overlay__bar {
+    flex-wrap: wrap;
+    row-gap: 2px;
+    height: auto;
+    min-height: 52px;
+    padding-top: 6px;
+    padding-bottom: 4px;
+  }
+  .doc-overlay__bar .rt-docbar {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-start;
+    margin: 0 -8px 0 -12px;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 720px) {
+  .doc-overlay__scroll {
+    padding: 0 0 64px;
+  }
+  .doc-page {
+    padding: 32px 20px 56px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .doc-page__title {
+    font-size: 30px;
+  }
+  .doc-overlay__count {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-overlay {
+    animation: none;
+  }
+  .todo-card__bar > span {
+    transition: none;
+  }
+}

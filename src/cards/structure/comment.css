@@ -1,0 +1,695 @@
+/* Comment card (frame 'paper': the shell draws the white card). */
+
+.cmt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px 12px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.cmt.is-resolved {
+  background: color-mix(in srgb, var(--success) 5%, transparent);
+  border-radius: var(--radius-card);
+}
+
+/* ---------- thread bar ---------- */
+
+.cmt__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  margin: 0 -4px 0 0;
+}
+.cmt__count {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cmt__resolved-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 600;
+}
+.cmt__bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cmt__bar-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.cmt__resolve:hover {
+  color: var(--success);
+}
+/* Resolve appears with hover/selection so resting threads stay calm (still reachable by keyboard). */
+.cmt__resolve {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.card-shell--comment:hover .cmt__resolve,
+.card-shell--comment.is-selected .cmt__resolve,
+.cmt__resolve:focus-visible {
+  opacity: 1;
+}
+
+.cmt__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-muted);
+}
+.cmt__icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.cmt__icon-btn.is-danger,
+.cmt__icon-btn.is-danger:hover {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+/* ---------- messages ---------- */
+
+.cmt__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cmt-msg {
+  display: flex;
+  gap: 9px;
+  min-width: 0;
+}
+.cmt-msg__avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+.cmt-msg__main {
+  flex: 1;
+  min-width: 0;
+}
+.cmt-msg__head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 20px;
+}
+.cmt-msg__name {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.cmt-msg__time,
+.cmt-msg__edited {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.cmt-msg__actions {
+  display: inline-flex;
+  align-self: center;
+  gap: 1px;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.cmt-msg:hover .cmt-msg__actions,
+.cmt-msg__actions:focus-within {
+  opacity: 1;
+}
+.cmt-msg__actions .cmt__icon-btn {
+  width: 22px;
+  height: 22px;
+}
+
+.cmt-msg__text {
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* While the card is being edited, message text can be selected and copied. */
+.card-shell.is-editing .cmt-msg__text {
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+}
+.cmt-link {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--link) 40%, transparent);
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.cmt-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.cmt__more {
+  padding-left: 35px;
+}
+.cmt__more-btn {
+  padding: 2px 8px;
+  margin-left: -8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--link);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cmt__more-btn:hover {
+  background: var(--surface-hover);
+}
+
+.cmt__empty {
+  padding: 4px 0;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+/* ---------- composer & inline editor ---------- */
+
+.cmt-composer {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 5px 5px 5px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cmt-composer:focus-within {
+  border-color: var(--select);
+  box-shadow: 0 0 0 3px var(--select-soft);
+}
+.cmt-composer.is-first {
+  margin-top: 4px;
+}
+
+.cmt-composer__input,
+.cmt-edit__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 24px;
+  padding: 3px 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.cmt-composer__input::placeholder,
+.cmt-edit__input::placeholder {
+  color: var(--text-muted);
+}
+.cmt-composer__input:focus-visible,
+.cmt-edit__input:focus-visible {
+  outline: none;
+}
+
+.cmt-composer__counter {
+  flex-shrink: 0;
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cmt-composer__send {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-text);
+  transition: opacity 0.12s ease;
+}
+.cmt-composer__send:disabled {
+  background: var(--surface-3);
+  color: var(--text-muted);
+  cursor: default;
+}
+.cmt-composer__send:not(:disabled):hover {
+  filter: brightness(1.15);
+}
+
+.cmt-edit {
+  margin-top: 4px;
+  padding: 4px 8px 6px;
+  border: 1px solid var(--select);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--select-soft);
+}
+.cmt-edit__input {
+  display: block;
+  width: 100%;
+}
+.cmt-edit__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+}
+.cmt-edit__btn {
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cmt-edit__btn:hover {
+  background: var(--surface-hover);
+}
+.cmt-edit__btn--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.cmt-edit__btn--primary:hover {
+  background: var(--accent);
+  filter: brightness(1.15);
+}
+.cmt-edit__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- resolved pill ---------- */
+
+.cmt.cmt--pill {
+  padding: 0;
+}
+.cmt-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 10px 6px 12px;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--success) 7%, transparent);
+  color: var(--text-2);
+  font-size: 12.5px;
+  text-align: left;
+}
+.cmt-pill:hover {
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+}
+.cmt-pill__icon {
+  flex-shrink: 0;
+  color: var(--success);
+}
+.cmt-pill__label {
+  flex-shrink: 0;
+  color: var(--success);
+  font-weight: 600;
+}
+.cmt-pill__count {
+  flex-shrink: 0;
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 17px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.cmt-pill__snippet {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.cmt-pill__chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--text-muted);
+}
+
+/* ---------- collapsed thread pill ---------- */
+
+.cmt-pill--collapsed {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.cmt-pill--collapsed:hover {
+  background: var(--surface-hover);
+}
+.cmt-pill__avatars {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--text-muted);
+}
+.cmt-pill__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--surface-2);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+.cmt-pill__avatar + .cmt-pill__avatar {
+  margin-left: -7px;
+}
+.cmt-pill--collapsed .cmt-pill__count {
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text-2);
+}
+/* The collapse control shows with hover/selection, like Resolve. */
+.cmt__collapse {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.card-shell--comment:hover .cmt__collapse,
+.card-shell--comment.is-selected .cmt__collapse,
+.cmt__collapse:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .cmt__resolve,
+  .cmt__collapse,
+  .cmt-msg__actions {
+    opacity: 1;
+  }
+}
+
+/* ---------- @mentions ---------- */
+
+.cmt-mention-chip {
+  padding: 0 3px;
+  margin: 0 -1px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--select) 13%, transparent);
+  color: var(--link);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cmt-mention-chip.is-me {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* Picker listbox (portaled to <body>) */
+.cmt-mention {
+  z-index: 1100;
+  min-width: 200px;
+  max-width: min(280px, calc(100vw - 16px));
+  padding: 4px;
+  overflow-y: auto;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-pop);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cmt-mention__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.cmt-mention__item.is-active {
+  background: var(--select-soft);
+}
+.cmt-mention__avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+.cmt-mention__name {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- thread menu ('More') ---------- */
+
+.cmt-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.cmt-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: 4px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-pop);
+}
+.cmt-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  white-space: nowrap;
+}
+.cmt-menu__item:hover,
+.cmt-menu__item:focus-visible {
+  outline: none;
+  background: var(--surface-hover);
+}
+.cmt-menu__item:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+.cmt-menu__item--danger {
+  color: var(--danger);
+}
+
+/* ---------- pins: comments attached to a card ---------- */
+
+/* Inside .world: above every card (dragged cards included), below line handles. */
+.cmt-pins {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 1200000;
+}
+.cmt-pin {
+  --pin-scale: 1;
+  --pin-ring: var(--border-strong);
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px 9px 9px 3px;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 2px var(--pin-ring),
+    var(--shadow-card-hover);
+  color: var(--text);
+  transform: scale(var(--pin-scale));
+  transform-origin: 50% 50%;
+  touch-action: none;
+  cursor: pointer;
+  transition:
+    box-shadow 0.12s ease,
+    opacity 0.12s ease;
+}
+.cmt-pin:hover {
+  box-shadow:
+    inset 0 0 0 2px var(--pin-ring),
+    var(--shadow-drag);
+}
+.cmt-pin.is-open {
+  box-shadow:
+    inset 0 0 0 2px var(--pin-ring),
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--select);
+}
+.cmt-pin.is-resolved {
+  opacity: 0.55;
+}
+.cmt-pin.is-resolved:hover,
+.cmt-pin.is-resolved.is-open,
+.cmt-pin.is-resolved:focus-visible {
+  opacity: 1;
+}
+.cmt-pin.is-dragging {
+  box-shadow:
+    inset 0 0 0 2px var(--pin-ring),
+    var(--shadow-drag);
+  cursor: grabbing;
+}
+.cmt-pin__count {
+  position: absolute;
+  top: -6px;
+  right: -7px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border: 1.5px solid var(--surface);
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+/* The card a dragged marker would attach to. */
+.cmt-pin-drop {
+  position: absolute;
+  border: 2px dashed var(--select);
+  border-radius: 6px;
+  background: var(--select-soft);
+  pointer-events: none;
+}
+
+/* Thread popover of a pin (portaled to <body>) */
+.cmt-pop {
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 340px;
+  max-width: calc(100vw - 16px);
+  overflow: visible;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-pop);
+  color: var(--text);
+  font-family: var(--font-ui);
+  outline: none;
+}
+.cmt.cmt--popover {
+  flex: 1;
+  min-height: 0;
+  padding: 8px 12px 12px;
+}
+.cmt--popover .cmt__bar {
+  flex-shrink: 0;
+  margin-right: -6px;
+}
+.cmt--popover .cmt__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-right: -8px;
+  padding-right: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.cmt--popover .cmt-msg__text {
+  user-select: text;
+  -webkit-user-select: text;
+}
+.cmt--popover .cmt-composer {
+  flex-shrink: 0;
+}
+.cmt--popover.is-resolved {
+  border-radius: inherit;
+}
+
+@media print {
+  .cmt-pins {
+    display: none !important;
+  }
+}

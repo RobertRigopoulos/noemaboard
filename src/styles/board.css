@@ -1,0 +1,248 @@
+/* Canvas, world and card frame styles (shared by every card type). */
+
+.board-view {
+  position: absolute;
+  inset: 0;
+}
+
+.board-loading {
+  position: absolute;
+  inset: 0;
+  background: var(--canvas-bg);
+}
+
+.canvas {
+  position: absolute;
+  top: var(--header-h);
+  left: var(--toolbar-w);
+  right: 0;
+  bottom: 0;
+  /* clip (not hidden): a hidden overflow is still scrollable, and browsers scroll it to reveal a caret */
+  overflow: clip;
+  background-color: var(--canvas-bg);
+  background-image: radial-gradient(circle, var(--canvas-dot) 1px, transparent 1.3px);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.canvas.is-space {
+  cursor: grab;
+}
+.canvas.is-panning {
+  cursor: grabbing;
+}
+.canvas.tool-line {
+  cursor: crosshair;
+}
+.canvas.is-file-over::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px dashed var(--select);
+  border-radius: 12px;
+  background: var(--select-soft);
+  pointer-events: none;
+}
+body.is-dragging-cards,
+body.is-dragging-cards * {
+  cursor: grabbing !important;
+}
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.marquee {
+  position: absolute;
+  border: 1px solid var(--select);
+  background: var(--select-soft);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ---------- card shell ---------- */
+
+.card-shell {
+  position: absolute;
+  color: var(--text);
+}
+.card-shell.in-column {
+  position: relative;
+  width: 100%;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.12s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+.card-shell.is-dragging {
+  box-shadow: var(--shadow-drag);
+  opacity: 0.96;
+}
+.card-bare.is-dragging {
+  box-shadow: none;
+  filter: drop-shadow(0 10px 18px rgba(16, 24, 40, 0.22));
+}
+
+/* Card color: strip on top + tinted background for paper cards */
+.card[data-color] {
+  background: var(--tint);
+  box-shadow: inset 0 4px 0 var(--strong), var(--shadow-card);
+}
+.card[data-color]:hover {
+  box-shadow: inset 0 4px 0 var(--strong), var(--shadow-card-hover);
+}
+[data-color='red'] { --strong: var(--c-red); --tint: var(--c-red-tint); }
+[data-color='orange'] { --strong: var(--c-orange); --tint: var(--c-orange-tint); }
+[data-color='yellow'] { --strong: var(--c-yellow); --tint: var(--c-yellow-tint); }
+[data-color='green'] { --strong: var(--c-green); --tint: var(--c-green-tint); }
+[data-color='teal'] { --strong: var(--c-teal); --tint: var(--c-teal-tint); }
+[data-color='blue'] { --strong: var(--c-blue); --tint: var(--c-blue-tint); }
+[data-color='purple'] { --strong: var(--c-purple); --tint: var(--c-purple-tint); }
+[data-color='pink'] { --strong: var(--c-pink); --tint: var(--c-pink-tint); }
+[data-color='brown'] { --strong: var(--c-brown); --tint: var(--c-brown-tint); }
+[data-color='grey'] { --strong: var(--c-grey); --tint: var(--c-grey-tint); }
+[data-color='dark'] { --strong: var(--c-dark); --tint: var(--c-dark-tint); }
+.card[data-color='dark'] {
+  color: #f2f3f5;
+  --text: #f2f3f5;
+  --text-2: #d0d3d8;
+  --text-muted: #9ea4ae;
+  --border: rgba(255, 255, 255, 0.14);
+}
+
+/* Selection & editing outlines drawn outside the card */
+.card-shell.is-selected::after,
+.card-shell.is-drop-target::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--select);
+  border-radius: calc(var(--radius-card) + 3px);
+  pointer-events: none;
+}
+.card-shell.is-editing::after {
+  border-color: var(--select);
+  box-shadow: 0 0 0 4px var(--select-soft);
+}
+.card-shell.is-drop-target::after {
+  border-style: dashed;
+  background: var(--select-soft);
+}
+
+.peer-outline {
+  position: absolute;
+  inset: -5px;
+  border: 2px solid;
+  border-radius: calc(var(--radius-card) + 5px);
+  pointer-events: none;
+  z-index: 2;
+}
+.peer-outline--editing {
+  border-style: solid;
+}
+.peer-tag {
+  position: absolute;
+  top: -20px;
+  left: -2px;
+  padding: 1px 6px;
+  border-radius: 4px 4px 4px 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.resize-handle {
+  position: absolute;
+  z-index: 3;
+  touch-action: none;
+}
+.resize-handle--width {
+  top: 0;
+  right: -6px;
+  width: 12px;
+  height: 100%;
+  cursor: ew-resize;
+}
+.resize-handle--width::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  width: 4px;
+  height: 28px;
+  margin-top: -14px;
+  border-radius: 2px;
+  background: var(--select);
+}
+.resize-handle--both {
+  right: -7px;
+  bottom: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--surface);
+  border: 2px solid var(--select);
+  cursor: nwse-resize;
+}
+
+.card-stub {
+  padding: 12px 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ---------- remote cursors ---------- */
+
+.remote-cursors {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 2000000;
+}
+.remote-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  transition: transform 80ms linear;
+  pointer-events: none;
+}
+.remote-cursor__name {
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* Low zoom: hide fine details for speed and legibility */
+.world[data-zoom='far'] .peer-tag {
+  display: none;
+}
+
+.card-unknown {
+  padding: 12px 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}

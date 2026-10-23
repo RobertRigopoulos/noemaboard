@@ -1,0 +1,49 @@
+{
+  "name": "noema-relay",
+  "version": "0.1.0",
+  "description": "Optional self-hostable relay for NoemaBoard boards: always-on availability and sync through strict networks. End-to-end encrypted; the relay never sees board contents.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/server.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/server.js"
+    },
+    "./protocol": "./src/protocol.js"
+  },
+  "bin": {
+    "noema-relay": "bin/noema-relay.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node bin/noema-relay.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "test:cloudflare": "node --test \"cloudflare/test/*.test.mjs\"",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "keywords": [
+    "noema",
+    "relay",
+    "yjs",
+    "crdt",
+    "end-to-end-encryption",
+    "self-hosted"
+  ],
+  "dependencies": {
+    "ws": "8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/ws": "^8.18.1",
+    "typescript": "~6.0.3"
+  }
+}

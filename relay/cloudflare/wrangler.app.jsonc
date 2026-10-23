@@ -1,0 +1,33 @@
+// NoemaBoard "team hosting" on Cloudflare (Workers free plan): ONE free deployment that serves
+//  - the front page (site/) at / and the NoemaBoard web app at /app/, so anyone can join from a browser, and
+//  - the end-to-end encrypted sync relay under /relay/, so boards stay available 24/7.
+//
+// Build and deploy from the repository root:
+//   npm run deploy:cloudflare      (node scripts/build-site.mjs, then wrangler deploy)
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "app",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "../../deploy-dist",
+    "not_found_handling": "404-page",
+    // Relay traffic must reach the worker, never the static app.
+    "run_worker_first": ["/relay/*"]
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "ROOMS", "class_name": "RelayRoom" },
+      { "name": "BLOBS", "class_name": "BlobStore" }
+    ]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RelayRoom", "BlobStore"] }],
+  "vars": {
+    "MAX_BLOB_MB": "25",
+    "MAX_ROOM_MB": "512",
+    "MAX_MESSAGE_MB": "16"
+  },
+  // Optional: require an access key from every client: `npx wrangler secret put ACCESS_KEY -c wrangler.app.jsonc`
+  // Off on purpose: nothing optional that could ever count toward usage.
+  "observability": { "enabled": false }
+}

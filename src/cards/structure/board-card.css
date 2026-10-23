@@ -1,0 +1,537 @@
+/* Board card: folder-like tile (frame 'bare'), plus a row variant inside columns. */
+
+.bcard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 4px 2px 2px;
+  text-align: center;
+}
+
+.bcard__icon {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 14px;
+  background: var(--surface-3);
+  box-shadow:
+    inset 0 0 0 1px var(--border),
+    0 1px 2px rgba(16, 24, 40, 0.06);
+  color: var(--text-muted);
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+}
+.card-shell--board:hover .bcard__icon {
+  box-shadow:
+    inset 0 0 0 1px var(--border-strong),
+    var(--shadow-card-hover);
+}
+.card-shell--board[data-color] .bcard__icon {
+  background: var(--strong);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(16, 24, 40, 0.14);
+  color: rgba(255, 255, 255, 0.92);
+}
+.card-shell--board[data-color]:hover .bcard__icon {
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    var(--shadow-card-hover);
+}
+.card-shell--board[data-color='yellow'] .bcard__icon {
+  color: rgba(60, 44, 0, 0.78);
+}
+
+.bcard__glyph {
+  width: 38px;
+  height: 38px;
+}
+.bcard__emoji {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-ui);
+  font-size: 42px;
+  line-height: 1;
+}
+
+.bcard__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+}
+
+.bcard__title {
+  display: -webkit-box;
+  max-width: 100%;
+  padding: 1px 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.bcard__input {
+  width: 100%;
+  height: 24px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  outline: 2px solid var(--select);
+  outline-offset: 0;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.bcard__meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 16px;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 16px;
+}
+.bcard__shared {
+  display: inline-flex;
+  align-items: center;
+}
+.bcard__warn {
+  color: var(--danger);
+}
+
+/* Selection: ring the icon and highlight the label, like a file in a desktop folder view. */
+.card-shell--board:not(.in-column).is-selected:not(.is-drop-target)::after {
+  display: none;
+}
+.card-shell--board:not(.in-column).is-selected .bcard__icon {
+  box-shadow:
+    0 0 0 2px var(--canvas-bg),
+    0 0 0 4px var(--select);
+}
+.card-shell--board:not(.in-column).is-editing .bcard__icon {
+  box-shadow:
+    0 0 0 2px var(--canvas-bg),
+    0 0 0 4px var(--select),
+    0 0 0 8px var(--select-soft);
+}
+.card-shell--board:not(.in-column).is-selected .bcard__title {
+  background: var(--select-soft);
+}
+
+/* Cards dragged onto the tile will move into the board. */
+.card-shell--board.is-drop-target::after {
+  inset: -6px;
+  border: 2px dashed var(--select);
+  border-radius: 18px;
+  background: var(--select-soft);
+}
+.card-shell--board.is-drop-target .bcard__icon {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 0 2px var(--select),
+    var(--shadow-card-hover);
+}
+.card-shell--board.in-column.is-drop-target::after {
+  inset: -3px;
+  border-radius: 6px;
+}
+.card-shell--board.in-column.is-drop-target .bcard__icon {
+  transform: none;
+}
+
+/* Remote peers' outline hugs the tile rather than a square frame. */
+.card-shell--board:not(.in-column) > .peer-outline {
+  border-radius: 18px;
+}
+
+/* ---------- row variant (inside a column) ---------- */
+
+.bcard--row {
+  flex-direction: row;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+}
+.card-shell--board.in-column:hover .bcard--row {
+  box-shadow: var(--shadow-card-hover);
+}
+.bcard--row .bcard__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+}
+.card-shell--board.in-column:hover .bcard__icon,
+.card-shell--board.in-column[data-color]:hover .bcard__icon {
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.bcard--row .bcard__glyph {
+  width: 22px;
+  height: 22px;
+}
+.bcard--row .bcard__emoji {
+  font-size: 24px;
+}
+.bcard--row .bcard__text {
+  flex: 1;
+  align-items: flex-start;
+}
+.bcard--row .bcard__title {
+  padding: 0;
+  font-size: 14px;
+}
+.bcard--row .bcard__meta {
+  justify-content: flex-start;
+}
+.bcard--row .bcard__input {
+  text-align: left;
+}
+
+/* ---------- icon & color popover (portaled to <body>) ---------- */
+
+.bcard-pop {
+  z-index: 1000;
+  width: 292px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-pop);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bcard-pop__section + .bcard-pop__section {
+  margin-top: 12px;
+}
+.bcard-pop__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.bcard-pop__label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.bcard-pop__text-btn {
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12px;
+}
+.bcard-pop__text-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.bcard-pop__text-btn[aria-pressed='true'] {
+  background: var(--select-soft);
+  color: var(--select);
+}
+
+.bcard-pop__icons {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+}
+.bcard-pop__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-ui);
+  font-size: 19px;
+  line-height: 1;
+}
+.bcard-pop__icon-btn:hover {
+  background: var(--surface-hover);
+}
+.bcard-pop__icon-btn[aria-pressed='true'] {
+  background: var(--select-soft);
+  box-shadow: inset 0 0 0 1.5px var(--select);
+}
+
+.bcard-pop__colors {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  justify-items: center;
+}
+.bcard-pop__swatch {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--strong);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.bcard-pop__swatch:hover {
+  transform: scale(1.12);
+}
+.bcard-pop__swatch--none {
+  background:
+    linear-gradient(135deg, transparent 45%, var(--danger) 45%, var(--danger) 55%, transparent 55%),
+    var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.bcard-pop__swatch[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--select);
+}
+
+.bcard-pop__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.bcard-pop__open {
+  height: 28px;
+  padding: 0 8px;
+}
+
+/* ---------- cover image ---------- */
+
+.bcard__icon.has-cover {
+  overflow: hidden;
+  background: var(--surface-3);
+}
+.bcard__cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* A thin inner edge keeps light covers from melting into the canvas. */
+.bcard__icon.has-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+}
+.bcard__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- popover: cover, icon search ---------- */
+
+.bcard-pop {
+  max-width: calc(100vw - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.bcard-pop__sublabel {
+  margin: 10px 0 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.bcard-pop__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.bcard-pop__empty {
+  padding: 10px 0 6px;
+  text-align: center;
+}
+
+.bcard-pop__cover-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bcard-pop__cover-current {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--surface-3);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.bcard-pop__cover-current img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bcard-pop__cover-btn {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.bcard-pop__cover-btn:hover:not(:disabled) {
+  border-style: solid;
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.bcard-pop__cover-btn:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+.bcard-pop__spin {
+  animation: bcard-spin 0.9s linear infinite;
+}
+@keyframes bcard-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bcard-pop__spin {
+    animation: none;
+  }
+}
+
+.bcard-pop__covers {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  max-height: 136px;
+  overflow-y: auto;
+}
+.bcard-pop__cover-choice {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 6px;
+  background: var(--surface-3);
+}
+.bcard-pop__cover-choice img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bcard-pop__cover-choice:hover {
+  filter: brightness(1.06);
+}
+.bcard-pop__cover-choice[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--select);
+}
+.bcard-pop__cover-choice:focus-visible {
+  outline-offset: 1px;
+}
+.bcard-pop__cover-loading {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--surface-3), var(--surface-hover), var(--surface-3));
+}
+
+.bcard-pop__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.bcard-pop__search-icon {
+  position: absolute;
+  left: 9px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.bcard-pop__search-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px 0 28px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.bcard-pop__search-input::placeholder {
+  color: var(--text-muted);
+}
+.bcard-pop__search-input:focus {
+  border-color: var(--select);
+  box-shadow: 0 0 0 3px var(--select-soft);
+}
+.bcard-pop__search-input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.bcard-pop__icons {
+  max-height: 172px;
+  overflow-y: auto;
+  padding: 2px;
+  margin: -2px;
+}
+.bcard-pop__icon-btn {
+  color: var(--text-2);
+}
+.bcard-pop__icon-btn:hover {
+  color: var(--text);
+}
+.bcard-pop__icon-btn:focus-visible {
+  outline-offset: -2px;
+}

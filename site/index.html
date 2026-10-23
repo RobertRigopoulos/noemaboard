@@ -1,0 +1,636 @@
+<!doctype html>
+<!--
+  NoemaBoard front page. Static: no frameworks, no CDNs, no cookies, no analytics.
+  The public source repository is set in ONE place: data-repo below. While it still says
+  REPO_OWNER, the download buttons and GitHub links stay hidden and "coming soon" notes show.
+-->
+<html lang="en" data-repo="https://github.com/REPO_OWNER/noemaboard">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NoemaBoard: free visual boards you edit together</title>
+  <meta name="description" content="An endless canvas for notes, images, links and to-dos. Share a link and edit the same board live with your team. Free and open source, with no accounts and no limits.">
+  <link rel="canonical" href="https://app.noemaboard.workers.dev/">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NoemaBoard">
+  <meta property="og:url" content="https://app.noemaboard.workers.dev/">
+  <meta property="og:title" content="NoemaBoard: lay out your ideas, together">
+  <meta property="og:description" content="Free visual boards for notes, images, links and to-dos, edited live with your team. No accounts, no limits, open source.">
+  <meta property="og:image" content="https://app.noemaboard.workers.dev/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="NoemaBoard: lay out your ideas, together. A board with notes, a to-do list and two teammates' cursors.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NoemaBoard: lay out your ideas, together">
+  <meta name="twitter:description" content="Free visual boards for notes, images, links and to-dos, edited live with your team. No accounts, no limits, open source.">
+  <meta name="twitter:image" content="https://app.noemaboard.workers.dev/og.png">
+  <meta name="twitter:image:alt" content="NoemaBoard: lay out your ideas, together. A board with notes, a to-do list and two teammates' cursors.">
+
+  <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "NoemaBoard",
+    "url": "https://app.noemaboard.workers.dev/",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "Web, Windows, macOS, Linux",
+    "description": "Free, open-source visual boards for notes, images, links and to-dos, edited together in real time.",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <!-- Icon sprite: drawn for this page, 24 x 24, stroked with currentColor. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4.5v10.5M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><rect x="4.5" y="3.5" width="15" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M7 3v13.5h13.5"/><path d="M3 7h13.5v13.5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.25 9.25v5.5L15 12z" fill="currentColor"/></symbol>
+    <symbol id="i-todo" viewBox="0 0 24 24"><path d="m4 7 2 2 3.5-3.5M4 15l2 2 3.5-3.5M13 7.5h7M13 15.5h7"/></symbol>
+    <symbol id="i-columns" viewBox="0 0 24 24"><rect x="3.5" y="4" width="4.8" height="16" rx="1.4"/><rect x="9.6" y="4" width="4.8" height="11" rx="1.4"/><rect x="15.7" y="4" width="4.8" height="13.5" rx="1.4"/></symbol>
+    <symbol id="i-nested" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2.5"/><rect x="11" y="11" width="6.5" height="6.5" rx="1.4"/><path d="M6.5 7h5M6.5 10.5h2.5"/></symbol>
+    <symbol id="i-line" viewBox="0 0 24 24"><rect x="3" y="14.5" width="6" height="6" rx="1.4"/><rect x="15" y="3.5" width="6" height="6" rx="1.4"/><path d="M9 17.5c4.5 0 6-2.5 7.2-6.2"/><path d="m13.9 12.4 2.4-1.6 1.1 2.6"/></symbol>
+    <symbol id="i-comment" viewBox="0 0 24 24"><path d="M5 4.5h14A1.5 1.5 0 0 1 20.5 6v9a1.5 1.5 0 0 1-1.5 1.5h-7.5l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5z"/><path d="M8 9h8M8 12h5"/></symbol>
+    <symbol id="i-sketch" viewBox="0 0 24 24"><path d="M3.5 17.5c2-5 4.5-8.5 6.5-8.5 2.6 0 .3 7 3.2 7 2.4 0 3.6-4.6 7.3-5.8"/></symbol>
+    <symbol id="i-template" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9h17M10 9v11.5"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="15" height="10.5" rx="1.6"/><path d="M2.5 19h19"/><path d="m9.2 9.8 2 2 3.6-3.6"/></symbol>
+    <symbol id="i-desktop" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></symbol>
+    <symbol id="i-user-x" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 19.5c.8-3.4 3.4-5.5 6.5-5.5 1.4 0 2.6.4 3.6 1.1"/><path d="m16 15 4.5 4.5M20.5 15 16 19.5"/></symbol>
+    <symbol id="i-no-ads" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4.5 19.5 15-15"/></symbol>
+    <symbol id="i-infinity" viewBox="0 0 24 24"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="7" rx="1.6"/><rect x="3.5" y="13" width="17" height="7" rx="1.6"/><path d="M7 7.5h.01M7 16.5h.01"/><path d="M11 7.5h6M11 16.5h6"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 12s3.3-6 9-6c1.5 0 2.8.4 4 1M21 12s-3.3 6-9 6c-1.5 0-2.8-.4-4-1"/><path d="M9.9 14.1a3 3 0 0 1 4.2-4.2"/><path d="m4 20 16-16"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16 7l2.5 2.5M14 9l2 2"/></symbol>
+    <symbol id="i-window" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8.5h18M6 6.25h.01M8.5 6.25h.01"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M2.5 19h19"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15h4.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap site-header__inner">
+      <a class="brand" href="./" aria-label="NoemaBoard home">
+        <picture>
+          <source srcset="assets/logo-light.svg" media="(prefers-color-scheme: dark)">
+          <img src="assets/logo.svg" alt="NoemaBoard" width="190" height="20">
+        </picture>
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#free">Free</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="btn btn--small btn--primary" href="./app/">Open app</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero ------------------------------------------------------------------>
+    <section class="hero dotted" aria-labelledby="hero-title">
+      <div class="wrap hero__inner">
+        <div class="hero__copy">
+          <p class="pill"><span class="pill__dot" aria-hidden="true"></span>Free and open source</p>
+          <h1 id="hero-title">Lay out your ideas, <span class="hl">together</span>.</h1>
+          <p class="lede">NoemaBoard is an endless canvas for notes, images, links and to-dos. Send your team a link and work on the same board at the same time. Free, with no account and no limits.</p>
+          <div class="actions">
+            <a class="btn btn--primary btn--large" href="./app/">Open NoemaBoard <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn--ghost btn--large" href="#how">How it works</a>
+          </div>
+          <p class="fine">Runs in your browser. Desktop apps for Windows, macOS and Linux.</p>
+        </div>
+
+        <figure class="hero__visual">
+          <!-- Screenshot slot: drop a real capture at assets/screenshots/hero.png and it replaces the drawing. -->
+          <img class="shot" src="assets/screenshots/hero.png" width="1600" height="1000" hidden
+               alt="A NoemaBoard board with notes, a to-do list and columns of cards"
+               onload="this.hidden=false;this.parentNode.classList.add('has-shot')" onerror="this.remove()">
+
+          <svg class="illo" viewBox="0 0 640 420" role="img" aria-labelledby="illo-title">
+            <title id="illo-title">A board with a note, a picture, a to-do list and a column of ideas, while two teammates, Maya and Theo, move their cursors across it</title>
+            <defs>
+              <pattern id="illo-dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="1" class="d-dot"/></pattern>
+              <clipPath id="illo-win"><rect width="640" height="420" rx="12"/></clipPath>
+              <clipPath id="illo-pic"><rect x="270" y="68" width="152" height="92" rx="2"/></clipPath>
+              <clipPath id="illo-thumb"><rect x="460" y="200" width="154" height="56" rx="3"/></clipPath>
+              <marker id="illo-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 8 5 1 9" class="d-line" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            </defs>
+            <g clip-path="url(#illo-win)">
+              <rect class="d-canvas" width="640" height="420"/>
+              <rect fill="url(#illo-dots)" width="640" height="420"/>
+
+              <!-- header -->
+              <rect class="d-surface" width="640" height="44"/>
+              <path class="d-border" d="M0 44.5h640M44.5 44v376"/>
+              <image href="assets/icon.svg" x="10" y="10" width="24" height="24"/>
+              <text class="t-ui t-muted" x="58" y="27">Home</text>
+              <text class="t-ui t-muted" x="99" y="27">/</text>
+              <text class="t-ui t-strong" x="111" y="27">Spring launch</text>
+              <circle cx="502" cy="22" r="11" class="d-orange d-ring"/><text class="t-av" x="502" y="25.6">M</text>
+              <circle cx="522" cy="22" r="11" class="d-purple d-ring"/><text class="t-av" x="522" y="25.6">T</text>
+              <rect x="546" y="10" width="80" height="24" rx="6" class="d-ink"/>
+              <text class="t-ui t-btn" x="586" y="26.5">Share</text>
+
+              <!-- toolbar -->
+              <rect class="d-surface" x="0" y="45" width="44" height="375"/>
+              <g class="d-tool" transform="translate(12 62)"><rect x="1.5" y="1" width="17" height="18" rx="2"/><path d="M5.5 6.5h9M5.5 10h9M5.5 13.5h5"/></g>
+              <g class="d-tool" transform="translate(12 100)"><rect x="1" y="2.5" width="18" height="15" rx="2"/><circle cx="7" cy="8" r="1.6"/><path d="M2 15l4.5-4.5 3.5 3.5 2.5-2.5 5.5 5"/></g>
+              <g class="d-tool" transform="translate(12 138)"><path d="M2 5.5l2 2 3.5-3.5M2 13.5l2 2 3.5-3.5M11 6h7M11 14h7"/></g>
+              <g class="d-tool" transform="translate(12 176)"><rect x="1.5" y="2" width="4.8" height="16" rx="1.4"/><rect x="7.6" y="2" width="4.8" height="11" rx="1.4"/><rect x="13.7" y="2" width="4.8" height="13.5" rx="1.4"/></g>
+              <g class="d-tool" transform="translate(12 214)"><rect x="1" y="1" width="18" height="18" rx="2.5"/><rect x="9" y="9" width="6.5" height="6.5" rx="1.4"/></g>
+              <g class="d-tool" transform="translate(12 252)"><path d="M2 16c4.5 0 6.5-2.5 8-6.5S13 3 18 3"/></g>
+
+              <!-- arrow: note to picture -->
+              <path class="d-line" d="M228 104 C 244 104, 246 116, 260 116" fill="none" stroke-width="1.6" marker-end="url(#illo-head)"/>
+
+              <!-- note -->
+              <g class="card">
+                <rect class="d-card" x="66" y="64" width="160" height="104" rx="3"/>
+                <text class="t-head" x="80" y="93">Spring launch</text>
+                <text class="t-body" x="80" y="116">A calm landing page,</text>
+                <text class="t-body" x="80" y="134">three short posts and</text>
+                <text class="t-body" x="80" y="152">one demo video.</text>
+              </g>
+
+              <!-- picture -->
+              <g class="card">
+                <rect class="d-card" x="262" y="60" width="168" height="126" rx="3"/>
+                <g clip-path="url(#illo-pic)">
+                  <rect x="270" y="68" width="152" height="92" fill="#dce8f3"/>
+                  <circle cx="386" cy="96" r="13" fill="#f2c23b"/>
+                  <path d="M270 140c26-20 46-26 70-16s44 4 82-14v50H270z" fill="#a9c5b6"/>
+                  <path d="M270 150c36-9 62-5 88 2s46 2 64-5v13H270z" fill="#3f7f7a"/>
+                </g>
+                <text class="t-cap" x="270" y="177">Morning light, soft colours</text>
+              </g>
+
+              <!-- to-do -->
+              <g class="card">
+                <rect class="d-card" x="66" y="188" width="160" height="128" rx="3"/>
+                <text class="t-title" x="80" y="211">This week</text>
+                <rect class="d-track" x="80" y="221" width="104" height="4" rx="2"/>
+                <rect class="d-green" x="80" y="221" width="69" height="4" rx="2"/>
+                <text class="t-count" x="212" y="226">2/3</text>
+                <rect class="d-green" x="80" y="238" width="14" height="14" rx="3"/><path class="d-check" d="M83.5 245l2.5 2.5 4.6-4.6"/>
+                <text class="t-body t-done" x="102" y="249.5">Write the headline</text>
+                <rect class="d-green" x="80" y="262" width="14" height="14" rx="3"/><path class="d-check" d="M83.5 269l2.5 2.5 4.6-4.6"/>
+                <text class="t-body t-done" x="102" y="273.5">Pick the colours</text>
+                <rect class="d-box" x="80.5" y="286.5" width="13" height="13" rx="3"/>
+                <text class="t-body" x="102" y="297.5">Record a demo</text>
+                <rect class="caret d-orange" x="187" y="286" width="1.6" height="15"/>
+              </g>
+
+              <!-- swatches -->
+              <g class="card">
+                <rect class="d-card" x="262" y="296" width="52" height="66" rx="3"/><rect x="267" y="301" width="42" height="38" rx="1.5" fill="#24324a"/><text class="t-tiny" x="267" y="354">Night</text>
+                <rect class="d-card" x="320" y="296" width="52" height="66" rx="3"/><rect x="325" y="301" width="42" height="38" rx="1.5" fill="#a9c5b6"/><text class="t-tiny" x="325" y="354">Sage</text>
+                <rect class="d-card" x="378" y="296" width="52" height="66" rx="3"/><rect x="383" y="301" width="42" height="38" rx="1.5" fill="#f2c23b"/><text class="t-tiny" x="383" y="354">Sun</text>
+              </g>
+
+              <!-- column -->
+              <g class="card">
+                <rect class="d-col" x="452" y="58" width="170" height="298" rx="4"/>
+                <text class="t-title" x="462" y="80">Ideas</text>
+                <text class="t-count" x="612" y="80">3</text>
+                <rect class="d-card" x="460" y="92" width="154" height="56" rx="3"/>
+                <rect class="d-blue" x="460" y="92" width="154" height="3" rx="1.5"/>
+                <text class="t-body" x="472" y="117">Short teaser clip for</text>
+                <text class="t-body" x="472" y="135">the launch posts</text>
+                <rect class="d-card" x="460" y="156" width="154" height="100" rx="3"/>
+                <text class="t-body t-strong2" x="472" y="177">Product walkthrough</text>
+                <text class="t-tiny" x="472" y="192">Video · 2:14</text>
+                <g clip-path="url(#illo-thumb)">
+                  <rect x="460" y="200" width="154" height="56" fill="#24324a"/>
+                  <path d="M460 242c30-12 58-16 88-7s46 5 66-2v23H460z" fill="#3f7f7a" opacity=".85"/>
+                </g>
+                <circle cx="537" cy="226" r="12" fill="#ffffff" opacity=".94"/>
+                <path d="M533.5 220.5v11l9-5.5z" fill="#24324a"/>
+                <rect class="d-card" x="460" y="264" width="154" height="84" rx="3"/>
+                <rect x="472" y="276" width="34" height="34" rx="7" class="d-teal"/>
+                <path d="M480 285h18M480 292h18M480 299h11" class="d-whiteline"/>
+                <text class="t-body t-strong2" x="516" y="290">Launch assets</text>
+                <text class="t-tiny" x="516" y="305">Board · 12 cards</text>
+                <text class="t-tiny" x="472" y="334">Open it like a folder</text>
+              </g>
+
+              <!-- Theo drags a note -->
+              <g class="drag">
+                <g class="card card--lift">
+                  <rect class="d-ytint" x="262" y="208" width="160" height="66" rx="3"/>
+                  <rect class="d-yellow" x="262" y="208" width="160" height="3" rx="1.5"/>
+                  <text class="t-body t-strong2" x="274" y="233">Launch on Tuesday?</text>
+                  <text class="t-body t-muted2" x="274" y="253">Ask Jo about the demo</text>
+                  <rect class="d-purple-line" x="258.5" y="204.5" width="167" height="73" rx="5" fill="none"/>
+                </g>
+                <g transform="translate(404 254)">
+                  <path d="M2 2 L16 8 L9 10 L7 16 Z" class="d-purple cursor"/>
+                  <rect x="14" y="16" width="44" height="20" rx="10" class="d-purple"/>
+                  <text class="t-name" x="36" y="29.8">Theo</text>
+                </g>
+              </g>
+
+              <!-- Maya points around the board -->
+              <g class="wander">
+                <g transform="translate(190 298)">
+                  <path d="M2 2 L16 8 L9 10 L7 16 Z" class="d-orange cursor"/>
+                  <rect x="14" y="16" width="46" height="20" rx="10" class="d-orange"/>
+                  <text class="t-name" x="37" y="29.8">Maya</text>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </figure>
+      </div>
+
+      <div class="wrap">
+        <ul class="facts" aria-label="At a glance">
+          <li><svg class="icon" aria-hidden="true"><use href="#i-user-x"/></svg>No account</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-no-ads"/></svg>No ads or tracking</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-infinity"/></svg>No limits</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>End-to-end encrypted</li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Open source</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- How it works -------------------------------------------------------->
+    <section id="how" class="section" aria-labelledby="how-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-title">Three steps, no sign-up</h2>
+          <p class="section__lede">From an empty canvas to a board your whole team is working on, in about a minute.</p>
+        </header>
+
+        <ol class="steps">
+          <li class="step">
+            <svg class="step__art" viewBox="0 0 280 150" aria-hidden="true">
+              <rect class="d-canvas" width="280" height="150" rx="6"/>
+              <rect fill="url(#step-dots)" width="280" height="150" rx="6"/>
+              <defs><pattern id="step-dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="7" cy="7" r=".9" class="d-dot"/></pattern></defs>
+              <rect class="d-card" x="28" y="28" width="108" height="78" rx="3"/>
+              <rect class="d-ink" x="40" y="42" width="58" height="8" rx="2"/>
+              <rect class="d-track" x="40" y="60" width="82" height="5" rx="2.5"/>
+              <rect class="d-track" x="40" y="72" width="72" height="5" rx="2.5"/>
+              <rect class="d-track" x="40" y="84" width="48" height="5" rx="2.5"/>
+              <rect class="d-ghost" x="156.5" y="46.5" width="96" height="70" rx="3"/>
+              <path class="d-plus" d="M204.5 70v22M193.5 81h22"/>
+              <g transform="translate(232 98)"><path d="M2 2 L16 8 L9 10 L7 16 Z" class="d-ink cursor"/></g>
+            </svg>
+            <span class="step__num" aria-hidden="true">1</span>
+            <h3>Create a board</h3>
+            <p>Start blank or from a template. Drop in notes, pictures, links and lists, and put them wherever they make sense to you.</p>
+          </li>
+          <li class="step">
+            <svg class="step__art" viewBox="0 0 280 150" aria-hidden="true">
+              <rect class="d-canvas" width="280" height="150" rx="6"/>
+              <rect fill="url(#step-dots)" width="280" height="150" rx="6"/>
+              <rect class="d-card" x="26" y="30" width="228" height="90" rx="6"/>
+              <text class="t-ui t-strong" x="42" y="54">Invite link</text>
+              <rect class="d-field" x="42.5" y="66.5" width="140" height="30" rx="5"/>
+              <text class="t-mono" x="52" y="86">…/#/join/k7Fq2wL9</text>
+              <rect class="d-ink" x="190" y="66" width="50" height="31" rx="5"/>
+              <text class="t-ui t-btn" x="215" y="86">Copy</text>
+            </svg>
+            <span class="step__num" aria-hidden="true">2</span>
+            <h3>Share the invite link</h3>
+            <p>Send the link however you like. Teammates open it in a browser or the desktop app and land right on the board.</p>
+          </li>
+          <li class="step">
+            <svg class="step__art" viewBox="0 0 280 150" aria-hidden="true">
+              <rect class="d-canvas" width="280" height="150" rx="6"/>
+              <rect fill="url(#step-dots)" width="280" height="150" rx="6"/>
+              <rect class="d-card" x="40" y="30" width="150" height="86" rx="3"/>
+              <rect class="d-ink" x="54" y="44" width="70" height="8" rx="2"/>
+              <rect class="d-track" x="54" y="62" width="112" height="5" rx="2.5"/>
+              <rect class="d-track" x="54" y="74" width="96" height="5" rx="2.5"/>
+              <rect class="d-track" x="54" y="86" width="40" height="5" rx="2.5"/>
+              <rect class="caret d-orange" x="96" y="83" width="1.6" height="11"/>
+              <g class="wander-sm"><g transform="translate(150 92)"><path d="M2 2 L16 8 L9 10 L7 16 Z" class="d-orange cursor"/><rect x="14" y="16" width="42" height="18" rx="9" class="d-orange"/><text class="t-name" x="35" y="28.5">Maya</text></g></g>
+              <g class="wander-sm2"><g transform="translate(196 40)"><path d="M2 2 L16 8 L9 10 L7 16 Z" class="d-purple cursor"/><rect x="14" y="16" width="40" height="18" rx="9" class="d-purple"/><text class="t-name" x="34" y="28.5">Theo</text></g></g>
+            </svg>
+            <span class="step__num" aria-hidden="true">3</span>
+            <h3>Edit together, live</h3>
+            <p>See each other's cursors and changes as they happen, even when two people type in the same note.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Features ------------------------------------------------------------>
+    <section id="features" class="section section--surface" aria-labelledby="features-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="eyebrow">Features</p>
+          <h2 id="features-title">Everything a board needs</h2>
+          <p class="section__lede">Collect anything, arrange it freely, and add structure when you are ready for it.</p>
+        </header>
+
+        <ul class="features">
+          <li class="feature" style="--c:var(--c-yellow);--t:var(--c-yellow-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-note"/></svg></span>
+            <h3>Notes</h3>
+            <p>Rich text with headings, lists and checklists. Colour a note to make it stand out.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-teal);--t:var(--c-teal-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-crop"/></svg></span>
+            <h3>Images with crop</h3>
+            <p>Drop in pictures, add captions, then crop, rotate or flip them without leaving the board.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-red);--t:var(--c-red-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></span>
+            <h3>Links and video</h3>
+            <p>Paste a link for a tidy preview. Videos and music from popular sites play right on the board.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-green);--t:var(--c-green-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-todo"/></svg></span>
+            <h3>To-do lists</h3>
+            <p>Tick tasks off and watch the progress bar fill. Set a reminder for the ones with a deadline.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-blue);--t:var(--c-blue-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-columns"/></svg></span>
+            <h3>Columns</h3>
+            <p>Stack cards in columns for stages, days or a simple kanban, and drag them between columns.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-purple);--t:var(--c-purple-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-nested"/></svg></span>
+            <h3>Boards inside boards</h3>
+            <p>Put a board on a board to keep big projects clear. Breadcrumbs always show the way back.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-orange);--t:var(--c-orange-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-line"/></svg></span>
+            <h3>Lines and arrows</h3>
+            <p>Connect cards to show order, cause or flow, and label the connection.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-teal);--t:var(--c-teal-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-comment"/></svg></span>
+            <h3>Comments</h3>
+            <p>Talk it through in a thread next to the work, and mention a teammate to get their eyes on it.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-red);--t:var(--c-red-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-sketch"/></svg></span>
+            <h3>Sketches</h3>
+            <p>Draw freehand with a mouse, a pen or a finger when words are not the quickest way.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-yellow);--t:var(--c-yellow-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-template"/></svg></span>
+            <h3>Templates</h3>
+            <p>Project plan, weekly planner, brainstorm, moodboard, meeting notes, retrospective and storyboard.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-green);--t:var(--c-green-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-offline"/></svg></span>
+            <h3>Works offline</h3>
+            <p>Every board is saved on your device. Keep going without a connection and sync when you are back.</p>
+          </li>
+          <li class="feature" style="--c:var(--c-blue);--t:var(--c-blue-tint)">
+            <span class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-desktop"/></svg></span>
+            <h3>Desktop apps</h3>
+            <p>Install it on Windows, macOS or Linux, or use the web app in any modern browser.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Screenshot gallery: stays hidden until a real screenshot loads. ------>
+    <section id="look" class="section gallery" aria-labelledby="look-title" hidden>
+      <div class="wrap">
+        <header class="section__head">
+          <p class="eyebrow">A look inside</p>
+          <h2 id="look-title">Real boards, made in NoemaBoard</h2>
+        </header>
+        <div class="gallery__grid">
+          <figure class="gallery__item" hidden>
+            <img src="assets/screenshots/project-plan.png" width="1600" height="1000" alt="A project plan board with To do, In progress and Done columns" decoding="async" fetchpriority="low"
+                 onload="this.parentNode.hidden=false;document.getElementById('look').hidden=false" onerror="this.parentNode.remove()">
+            <figcaption>Plan a project in columns</figcaption>
+          </figure>
+          <figure class="gallery__item" hidden>
+            <img src="assets/screenshots/moodboard.png" width="1600" height="1000" alt="A moodboard with a colour palette, notes on tone and typography, and a column for pictures" decoding="async" fetchpriority="low"
+                 onload="this.parentNode.hidden=false;document.getElementById('look').hidden=false" onerror="this.parentNode.remove()">
+            <figcaption>Collect a mood</figcaption>
+          </figure>
+          <figure class="gallery__item" hidden>
+            <img src="assets/screenshots/brainstorm.png" width="1600" height="1000" alt="A brainstorm with ideas connected to a central question" decoding="async" fetchpriority="low"
+                 onload="this.parentNode.hidden=false;document.getElementById('look').hidden=false" onerror="this.parentNode.remove()">
+            <figcaption>Brainstorm around a question</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Free, really -------------------------------------------------------->
+    <section id="free" class="section" aria-labelledby="free-title">
+      <div class="wrap free">
+        <div class="free__copy">
+          <p class="eyebrow">Free, really</p>
+          <h2 id="free-title">Not a trial. Not a starter plan.</h2>
+          <p class="section__lede">There is nothing to upgrade to. Every feature is there for everyone, from the first board.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-user-x"/></svg><div><strong>No accounts.</strong> Pick a name and a colour so your teammates know who is who. That is the whole setup.</div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-no-ads"/></svg><div><strong>No ads.</strong> Nothing to sell you, and nobody to sell your attention to.</div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-infinity"/></svg><div><strong>No limits.</strong> As many boards, cards and teammates as you like.</div></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg><div><strong>Open source.</strong> MIT licensed. Read the code, change it, or run your own copy.</div></li>
+          </ul>
+        </div>
+
+        <aside class="explainer" aria-labelledby="how-free-title">
+          <h3 id="how-free-title">So how can it be free?</h3>
+          <svg class="explainer__art" viewBox="0 0 400 250" role="img" aria-labelledby="net-title">
+            <title id="net-title">Three devices sync with each other directly, and each also keeps in touch with an always-on sync service that stores only encrypted data</title>
+            <path class="n-dash" d="M58 172 168 74M200 172V74M342 172 232 74"/>
+            <path class="n-solid" d="M102 205h54M244 205h54"/>
+            <rect class="d-card" x="112" y="14" width="176" height="60" rx="8"/>
+            <g class="n-icon" transform="translate(128 32)"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></g>
+            <text class="x-title" x="162" y="40">Sync service</text>
+            <text class="x-sub" x="162" y="59">can't read boards</text>
+            <rect class="d-card" x="14" y="172" width="88" height="64" rx="8"/>
+            <g class="n-icon" transform="translate(46 181)"><rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M2.5 19h19"/></g>
+            <text class="x-label" x="58" y="224">You</text>
+            <rect class="d-card" x="156" y="172" width="88" height="64" rx="8"/>
+            <g class="n-icon" transform="translate(188 181)"><rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M2.5 19h19"/></g>
+            <text class="x-label" x="200" y="224">Sam</text>
+            <rect class="d-card" x="298" y="172" width="88" height="64" rx="8"/>
+            <g class="n-icon" transform="translate(330 181)"><rect x="7" y="2.5" width="10" height="17" rx="2"/><path d="M11 16.5h2"/></g>
+            <text class="x-label" x="342" y="224">Jo</text>
+            <text class="x-tiny" x="129" y="196">direct</text>
+            <text class="x-tiny" x="271" y="196">direct</text>
+          </svg>
+          <p>Most board apps keep your work on their servers. Servers cost money every month, so you pay every month.</p>
+          <p>NoemaBoard turns that around. Each board lives on the devices of the people who use it, and those devices sync with each other directly. A small sync service keeps an encrypted copy so shared boards are always within reach, and it runs on a free hosting plan.</p>
+          <p>No big server bill means nothing to pass on to you.</p>
+          <p class="explainer__note">If the free plan's daily allowance is ever used up, the sync service pauses until the next day. Boards keep working, and devices keep syncing directly.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Privacy ------------------------------------------------------------->
+    <section id="privacy" class="section section--ink" aria-labelledby="privacy-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="eyebrow">Privacy</p>
+          <h2 id="privacy-title">Your boards are yours to read</h2>
+          <p class="section__lede">Not ours, and not a server's.</p>
+        </header>
+
+        <div class="privacy">
+          <ul class="privacy__points">
+            <li>
+              <span class="privacy__icon"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg></span>
+              <h3>End-to-end encrypted</h3>
+              <p>Boards are encrypted on your device before they travel, and only people with the board's key can open them.</p>
+            </li>
+            <li>
+              <span class="privacy__icon"><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg></span>
+              <h3>The server can't read them</h3>
+              <p>The sync service stores and passes on encrypted data it has no key for. It can't see your notes, pictures or titles.</p>
+            </li>
+            <li>
+              <span class="privacy__icon"><svg class="icon" aria-hidden="true"><use href="#i-eye-off"/></svg></span>
+              <h3>No tracking</h3>
+              <p>No analytics, no ads, no cookies, in the app and on this page.</p>
+            </li>
+          </ul>
+
+          <div class="keylink">
+            <p class="keylink__label"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>Where the key lives</p>
+            <p class="keylink__url"><span class="keylink__addr">app.noemaboard.workers.dev/app/</span><span class="keylink__key">#/join/k7Fq2wL9…</span></p>
+            <div class="keylink__legend">
+              <p><span class="swatch swatch--addr" aria-hidden="true"></span>The address: this part reaches the server.</p>
+              <p><span class="swatch swatch--key" aria-hidden="true"></span>After the #: holds the board's key. Browsers never send this part to any server.</p>
+            </div>
+            <p class="keylink__note">Anyone with an invite link can open and edit that board, so share it the way you would share a key.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download ------------------------------------------------------------>
+    <section id="download" class="section" aria-labelledby="download-title">
+      <div class="wrap">
+        <div class="download">
+          <div class="download__copy">
+            <img class="download__icon" src="assets/icon.svg" width="72" height="72" alt="">
+            <div>
+              <p class="eyebrow">Desktop apps</p>
+              <h2 id="download-title">Take your boards to the desktop</h2>
+              <p class="section__lede">Your boards one click away, even offline. The desktop app can also keep shared boards online in the background, so teammates can sync while its window is closed.</p>
+            </div>
+          </div>
+
+          <div class="download__buttons" data-repo-only hidden>
+            <a class="dl" data-os="windows" data-repo-path="releases/latest">
+              <svg class="icon" aria-hidden="true"><use href="#i-window"/></svg>
+              <span><strong>Windows</strong><small>Installer or portable</small></span>
+              <svg class="icon dl__arrow" aria-hidden="true"><use href="#i-down"/></svg>
+            </a>
+            <a class="dl" data-os="mac" data-repo-path="releases/latest">
+              <svg class="icon" aria-hidden="true"><use href="#i-laptop"/></svg>
+              <span><strong>macOS</strong><small>Apple silicon and Intel</small></span>
+              <svg class="icon dl__arrow" aria-hidden="true"><use href="#i-down"/></svg>
+            </a>
+            <a class="dl" data-os="linux" data-repo-path="releases/latest">
+              <svg class="icon" aria-hidden="true"><use href="#i-terminal"/></svg>
+              <span><strong>Linux</strong><small>AppImage or .deb</small></span>
+              <svg class="icon dl__arrow" aria-hidden="true"><use href="#i-down"/></svg>
+            </a>
+            <p class="download__fine">Free downloads from the project's releases page. The apps are not code-signed yet, so your system may ask you to confirm the first time you open one.</p>
+          </div>
+
+          <div class="soon" data-repo-missing>
+            <p><strong>Desktop downloads are coming soon.</strong> Until then, NoemaBoard runs in any modern browser, on any computer, with the same features.</p>
+            <a class="btn btn--primary" href="./app/">Open NoemaBoard <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ ----------------------------------------------------------------->
+    <section id="faq" class="section section--surface" aria-labelledby="faq-title">
+      <div class="wrap faq">
+        <header class="section__head">
+          <p class="eyebrow">FAQ</p>
+          <h2 id="faq-title">Good questions</h2>
+        </header>
+        <div class="faq__list">
+          <details open>
+            <summary>Is it really free?</summary>
+            <p>Yes. There is no paid plan, no trial period and no ads. Boards live on your own devices, and the always-on sync service runs on a free hosting plan, so there is no running cost to recover from you.</p>
+          </details>
+          <details>
+            <summary>Do I need an account?</summary>
+            <p>No. Open the app, choose the name and colour your teammates will see, and start. To work with someone, send them the board's invite link.</p>
+          </details>
+          <details>
+            <summary>Is my data safe?</summary>
+            <p>Your boards are saved on your device and are end-to-end encrypted whenever they sync, so the sync service only holds data it can't read. Deleted cards wait in the trash for 90 days, and you can save a full backup at any time. One thing to keep in mind: anyone with a board's invite link can open and edit it, so share links only with people you trust.</p>
+          </details>
+          <details>
+            <summary>What if my teammates are offline?</summary>
+            <p>Just keep working. Your changes are saved on your device and reach the always-on sync service as soon as you are online, so teammates get them the next time they open the board, even if you are offline by then.</p>
+          </details>
+          <details>
+            <summary>Does it work on phones?</summary>
+            <p>Yes, in your phone's browser. Pan with one finger, pinch to zoom and double-tap to add a note. Big boards are most comfortable on a larger screen, and there are no separate phone apps yet.</p>
+          </details>
+          <details>
+            <summary>Can I host it myself?</summary>
+            <p>Yes. NoemaBoard is open source under the MIT license. You can publish your own copy of the web app together with its sync service on a free hosting plan, or run the sync server on any computer you trust.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing call to action ---------------------------------------------->
+    <section class="cta dotted" aria-labelledby="cta-title">
+      <div class="wrap cta__inner">
+        <img class="cta__mark" src="assets/icon.svg" width="64" height="64" alt="">
+        <h2 id="cta-title">Give your next idea some room.</h2>
+        <p class="section__lede">Open a board, share the link, and think it through together.</p>
+        <div class="actions actions--center">
+          <a class="btn btn--primary btn--large" href="./app/">Open NoemaBoard <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <a class="brand brand--footer" href="./" aria-label="NoemaBoard home">
+        <picture>
+          <source srcset="assets/logo-light.svg" media="(prefers-color-scheme: dark)">
+          <img src="assets/logo.svg" alt="NoemaBoard" width="152" height="16" loading="lazy">
+        </picture>
+      </a>
+      <nav class="site-footer__links" aria-label="Footer">
+        <a href="./app/">Open the app</a>
+        <a href="#faq">FAQ</a>
+        <a data-repo-only hidden data-repo-path="">Source on GitHub</a>
+        <a data-repo-only hidden data-repo-path="blob/main/LICENSE">MIT license</a>
+        <span data-repo-missing>MIT license</span>
+        <span data-repo-missing>Source code coming soon</span>
+      </nav>
+      <p class="site-footer__fine">Free and open source. No cookies, no tracking. Not affiliated with any other product named Noema.</p>
+    </div>
+  </footer>
+</body>
+</html>

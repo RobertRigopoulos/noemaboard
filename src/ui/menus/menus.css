@@ -1,0 +1,331 @@
+/* Context menu, selection toolbar and color dots. */
+
+/* ---------- context menu ---------- */
+
+.ctx-menu {
+  pointer-events: auto;
+  z-index: 1000;
+  min-width: 228px;
+  max-width: 300px;
+  padding: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+  font-size: 13px;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: noema-menu-in 90ms ease-out;
+}
+.ctx-menu:focus {
+  outline: none;
+}
+
+@keyframes noema-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+.ctx-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 32px;
+  padding: 0 10px 0 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-size: 13px;
+  line-height: 1;
+}
+.ctx-menu__item:hover:not(:disabled),
+.ctx-menu__item:focus-visible {
+  background: var(--surface-hover);
+  outline: none;
+}
+.ctx-menu__item:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--select);
+}
+.ctx-menu__item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.ctx-menu__icon {
+  flex: none;
+  color: var(--text-muted);
+}
+.ctx-menu__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ctx-menu__hint {
+  flex: none;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.ctx-menu__item--danger,
+.ctx-menu__item--danger .ctx-menu__icon {
+  color: var(--danger);
+}
+.ctx-menu__item--danger:hover:not(:disabled),
+.ctx-menu__item--danger:focus-visible {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+.ctx-menu__sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
+}
+.ctx-menu__sep:first-child,
+.ctx-menu__sep + .ctx-menu__sep {
+  display: none;
+}
+.ctx-menu__label {
+  padding: 6px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.ctx-menu__colors {
+  padding: 6px 6px 4px;
+}
+
+/* Toggle items: the check sits where a shortcut would, and keeps its space when off. */
+.ctx-menu__check {
+  flex: none;
+  color: var(--select);
+}
+.ctx-menu__check.is-off {
+  visibility: hidden;
+}
+.ctx-menu__item[role='menuitemcheckbox'][aria-checked='true'] .ctx-menu__icon {
+  color: var(--text);
+}
+
+/* Submenus */
+.ctx-menu__chevron {
+  flex: none;
+  margin-right: -2px;
+  color: var(--text-muted);
+  transition: transform 0.12s ease;
+}
+.ctx-menu__chevron.is-open {
+  transform: rotate(180deg);
+}
+.ctx-menu__item--sub.is-open:not(:disabled) {
+  background: var(--surface-hover);
+}
+.ctx-menu--sub {
+  min-width: 210px;
+}
+.ctx-menu--dropdown {
+  min-width: 200px;
+}
+/* Narrow windows: a submenu opens in place, indented under its trigger. */
+.ctx-menu__inline {
+  margin: 2px 0 4px 12px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ctx-menu,
+  .sel-bar {
+    animation: none;
+  }
+  .ctx-menu__chevron {
+    transition: none;
+  }
+}
+
+/* ---------- color dots ---------- */
+
+.color-dots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.color-dots--sm {
+  gap: 3px;
+}
+.color-dot {
+  --dot: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--dot);
+  height: var(--dot);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  transition: transform 0.08s ease;
+}
+.color-dots--sm .color-dot {
+  --dot: 16px;
+}
+.color-dot:hover {
+  transform: scale(1.15);
+}
+.color-dot:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 2px;
+}
+.color-dot[aria-pressed='true'],
+.color-dot[aria-checked='true'] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3.5px var(--text-2);
+}
+.color-dot[data-swatch='yellow'] {
+  color: #3d3000;
+}
+.color-dot svg {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.35));
+}
+.color-dot--none {
+  background: var(--surface);
+  color: var(--text-muted);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.color-dot--none svg {
+  filter: none;
+}
+
+/* ---------- selection toolbar ---------- */
+
+.sel-bar {
+  pointer-events: auto;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: calc(100vw - var(--toolbar-w) - 16px);
+  padding: 4px;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+  user-select: none;
+  -webkit-user-select: none;
+  animation: noema-bar-in 120ms ease-out;
+}
+.sel-bar .color-dots {
+  flex-wrap: nowrap;
+  padding: 0 4px;
+}
+
+@keyframes noema-bar-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.sel-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+}
+.sel-bar__btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.sel-bar__btn[aria-pressed='true'] {
+  background: var(--select-soft);
+  color: var(--select);
+}
+.sel-bar__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.sel-bar__btn--danger:hover:not(:disabled) {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+.sel-bar__sep {
+  flex: none;
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--border);
+}
+.sel-bar__segmented {
+  display: flex;
+  gap: 2px;
+}
+.sel-bar__btn--menu {
+  gap: 1px;
+  width: auto;
+  min-width: 30px;
+  padding: 0 4px 0 6px;
+}
+.sel-bar__btn--menu[aria-expanded='true'] {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.sel-bar__caret {
+  opacity: 0.7;
+}
+.sel-bar__btn:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 0;
+}
+
+.line-swatch {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.line-swatch--dashed {
+  height: 2px;
+  background: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 7px);
+}
+
+/* Phones: the bar wraps (colours on their own row) instead of running off screen. */
+@media (max-width: 519px) {
+  .sel-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 4px;
+  }
+  .sel-bar .color-dots {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+  }
+  .sel-bar .color-dots + .sel-bar__sep {
+    display: none;
+  }
+}
+
+/* Dragging a new card from the rail: the bar would only get in the way of the drop. */
+body.is-rail-dragging .sel-bar {
+  visibility: hidden;
+}

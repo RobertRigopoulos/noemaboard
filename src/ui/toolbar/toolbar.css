@@ -1,0 +1,297 @@
+/* Left tool rail, its "More" popover, drag ghost and tooltips. */
+
+.rail {
+  pointer-events: auto;
+  position: absolute;
+  left: 0;
+  top: var(--header-h);
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  width: var(--toolbar-w);
+  padding: 8px 0 6px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rail__scroll {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 0;
+  padding: 0 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.rail__scroll::-webkit-scrollbar {
+  display: none;
+}
+.rail__spacer {
+  flex: 1 1 0;
+  min-height: 6px;
+}
+
+.rail__item {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 60px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-2);
+  touch-action: pan-y;
+  -webkit-user-drag: none;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease,
+    transform 0.12s ease;
+}
+.rail__item:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.rail__item:active {
+  transform: scale(0.96);
+}
+.rail__item:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: -2px;
+}
+.rail__item[aria-pressed='true'],
+.rail__item[aria-expanded='true'] {
+  background: var(--select-soft);
+  color: var(--select);
+}
+.rail__item svg {
+  flex: none;
+}
+
+.rail__label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail__divider {
+  flex: none;
+  width: 32px;
+  height: 1px;
+  margin: 6px 0;
+  background: var(--border);
+}
+
+/* ---------- trash ---------- */
+
+.rail__trash {
+  margin: 0 auto;
+}
+.rail__trash.is-drop-ready {
+  box-shadow: inset 0 0 0 1.5px var(--border-strong);
+  background: var(--surface-2);
+}
+.rail__trash.is-drop-target,
+.rail__trash.is-drop-target:hover {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+  color: var(--danger);
+  transform: scale(1.06);
+}
+.rail__badge-count {
+  position: absolute;
+  top: 5px;
+  right: 9px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border: 2px solid var(--surface);
+  border-radius: 9px;
+  background: var(--text-muted);
+  color: var(--surface);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.rail__trash.is-drop-target .rail__badge-count {
+  background: var(--danger);
+}
+
+/* ---------- read-only ---------- */
+
+.rail__badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 6px;
+  padding: 10px 4px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* ---------- "More" popover ---------- */
+
+.rail-more {
+  pointer-events: auto;
+  z-index: 1000;
+  min-width: 188px;
+  padding: 4px;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+  animation: rail-pop-in 90ms ease-out;
+}
+.rail-more:focus {
+  outline: none;
+}
+.rail-more__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  touch-action: pan-y;
+}
+.rail-more__item svg {
+  color: var(--text-muted);
+}
+.rail-more__item:hover,
+.rail-more__item:focus-visible {
+  background: var(--surface-hover);
+  outline: none;
+}
+.rail-more__item:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--select);
+}
+.rail-more__sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
+}
+
+@keyframes rail-pop-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+}
+
+/* ---------- drag ghost ---------- */
+
+.rail-ghost {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px dashed transparent;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-drag);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.94;
+  pointer-events: none;
+  will-change: transform;
+}
+.rail-ghost--board {
+  border-radius: 10px;
+  flex-direction: column;
+}
+.rail-ghost--over-none {
+  opacity: 0.5;
+  box-shadow: var(--shadow-card);
+}
+/* Over a column the ghost outlines to confirm it will be stacked there. */
+.rail-ghost--over-column {
+  border-color: var(--select);
+}
+
+body.is-rail-dragging,
+body.is-rail-dragging * {
+  cursor: grabbing !important;
+}
+
+/* ---------- tooltip ---------- */
+
+.noema-tooltip {
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--text);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-pop);
+}
+.noema-tooltip__kbd {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface) 22%, transparent);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Short windows: tighter rail, then icons only. */
+@media (max-height: 760px) {
+  .rail__item {
+    height: 50px;
+    gap: 4px;
+  }
+  .rail__divider {
+    margin: 3px 0;
+  }
+}
+@media (max-height: 620px) {
+  .rail__item {
+    height: 42px;
+  }
+  .rail__label {
+    display: none;
+  }
+}

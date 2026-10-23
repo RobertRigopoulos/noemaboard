@@ -1,0 +1,119 @@
+# Desktop release: push a tag like v0.2.0 (matching package.json "version").
+# Builds Windows (installer + portable), macOS (dmg/zip, x64 + arm64) and Linux (AppImage + deb),
+# uploads everything to a draft GitHub Release, then publishes it once all platforms succeeded.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  # Reads where GitHub Pages publishes the web app (the address invite links point at).
+  pages: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    name: Create draft release
+    runs-on: ubuntu-latest
+    outputs:
+      public_url: ${{ steps.public-url.outputs.url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Invite links created in the desktop app point at the web build so anyone can open them.
+      # Same address the Pages workflow deploys to: right for project pages, user/organization
+      # sites (<owner>.github.io) and custom domains alike.
+      - name: Resolve the web app address
+        id: public-url
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLIC_URL: ${{ vars.PUBLIC_URL }}
+        run: |
+          url="$PUBLIC_URL"
+          if [ -z "$url" ]; then
+            url="$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .html_url 2>/dev/null || true)"
+          fi
+          if [ -z "$url" ]; then
+            echo "::error::Cannot tell where the web app is published. Enable GitHub Pages (Settings > Pages > Source: GitHub Actions) or set the repository variable PUBLIC_URL."
+            exit 1
+          fi
+          case "$url" in */) ;; *) url="$url/" ;; esac
+          echo "Invite links will point at $url"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag matches package.json version
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists"
+          else
+            gh release create "$GITHUB_REF_NAME" --draft --verify-tag --generate-notes --title "Noema $GITHUB_REF_NAME"
+          fi
+
+  build:
+    name: Build (${{ matrix.os }})
+    needs: draft
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: --win
+          - os: macos-latest
+            platform: --mac
+          - os: ubuntu-latest
+            platform: --linux
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      VITE_PUBLIC_URL: ${{ needs.draft.outputs.public_url }}
+      # Optional team sync server (e.g. https://noema.<you>.workers.dev/relay), from the repository variable.
+      VITE_DEFAULT_RELAY: ${{ vars.DEFAULT_RELAY }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Bundle
+        run: npx electron-vite build
+
+      # owner/repo are passed explicitly so publishing never depends on package.json "repository".
+      - name: Package and upload
+        run: >-
+          npx electron-builder ${{ matrix.platform }} --publish always
+          --config.publish.owner=${{ github.repository_owner }}
+          --config.publish.repo=${{ github.event.repository.name }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No paid certificates: skip keychain/certificate lookup (macOS is ad-hoc signed).
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+  publish:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Un-draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false --latest

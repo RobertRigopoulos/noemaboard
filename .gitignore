@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+release/
+*.tsbuildinfo
+.vite/
+coverage/
+
+# Logs & caches
+*.log
+npm-debug.log*
+.eslintcache
+
+# Local env (VITE_PUBLIC_URL etc.)
+.env.local
+.env.*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Cloudflare local state
+.wrangler/
+.dev.vars
+
+# Built front page + app for Cloudflare
+deploy-dist/
+
+# Local tooling and design process leftovers (the chosen logo lives in public/ and design/concept-1/)
+.claude/
+design/concept-2/
+design/concept-3/
+design/site-previews/

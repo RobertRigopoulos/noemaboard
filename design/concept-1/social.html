@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>NoemaBoard social</title><style>@font-face{font-family:Inter;src:url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+html,body{margin:0;overflow:hidden}
+body{font:500 12px/1.3 Inter,system-ui,sans-serif;letter-spacing:.01em}
+figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+figcaption{font-size:11px;opacity:.55;white-space:nowrap}
+canvas{image-rendering:pixelated;display:block}
+body{width:1640px;background:#fff;color:#1f2328;padding:24px;box-sizing:border-box}
+.row{display:flex;gap:36px;align-items:flex-end;margin-bottom:28px}
+.av{border-radius:50%;display:block}
+.bn{position:relative;display:inline-block}
+.bn img{display:block}
+.zone{position:absolute;border:2px dashed #e5484d;border-radius:50%;background:rgba(229,72,77,.08)}
+</style>
+<div class="row">
+  <figure><img src="social/avatar-400.png" width="400"><figcaption>avatar-400.png (square)</figcaption></figure>
+  <figure><img class="av" src="social/avatar-400.png" width="200"><figcaption>circle crop 200</figcaption></figure>
+  <figure><img class="av" src="social/avatar-400.png" width="48"><figcaption>48</figcaption></figure>
+  <figure><img class="av" src="social/avatar-400.png" width="32"><figcaption>32</figcaption></figure>
+  <figure style="background:#000;padding:10px"><img class="av" src="social/avatar-400.png" width="120"><figcaption style="color:#fff">on black</figcaption></figure>
+  <figure><div class="row" style="margin:0;gap:20px"><img src="apple-touch-icon.png" width="180" style="border-radius:40px"><img src="icon-512.png" width="180"></div><figcaption>apple-touch-icon (iOS mask) / icon-512</figcaption></figure>
+</div>
+<figure style="align-items:flex-start"><div class="bn"><img src="social/banner-x-1500x500.png" width="1500"><div class="zone" style="left:40px;top:333px;width:334px;height:334px"></div></div><figcaption>X header 1500 x 500, dashed: avatar overlap zone (approx.)</figcaption></figure>
+<figure style="align-items:flex-start;margin-top:24px"><div class="bn"><img src="social/banner-linkedin-1584x396.png" width="1584"><div class="zone" style="left:48px;top:200px;width:300px;height:300px"></div></div><figcaption>LinkedIn banner 1584 x 396, dashed: profile photo zone (approx.)</figcaption></figure>

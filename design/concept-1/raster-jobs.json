@@ -1,0 +1,94 @@
+[
+ {
+  "svg": "icon-square.svg",
+  "w": 400,
+  "h": 400,
+  "out": "social/avatar-400.png"
+ },
+ {
+  "svg": "social/banner-x.svg",
+  "w": 1500,
+  "h": 500,
+  "out": "social/banner-x-1500x500.png"
+ },
+ {
+  "svg": "social/banner-linkedin.svg",
+  "w": 1584,
+  "h": 396,
+  "out": "social/banner-linkedin-1584x396.png"
+ },
+ {
+  "svg": "icon-square.svg",
+  "w": 180,
+  "h": 180,
+  "out": "apple-touch-icon.png"
+ },
+ {
+  "svg": "icon.svg",
+  "w": 512,
+  "h": 512,
+  "out": "icon-512.png"
+ },
+ {
+  "svg": "icon.svg",
+  "w": 1024,
+  "h": 1024,
+  "out": "icon-1024.png"
+ },
+ {
+  "svg": "icon-macos.svg",
+  "w": 1024,
+  "h": 1024,
+  "out": "icon-macos-1024.png"
+ },
+ {
+  "ico": [
+   {
+    "svg": "icon.svg",
+    "size": 16
+   },
+   {
+    "svg": "icon.svg",
+    "size": 24
+   },
+   {
+    "svg": "icon.svg",
+    "size": 32
+   },
+   {
+    "svg": "icon.svg",
+    "size": 48
+   },
+   {
+    "svg": "icon.svg",
+    "size": 64
+   },
+   {
+    "svg": "icon.svg",
+    "size": 128
+   },
+   {
+    "svg": "icon.svg",
+    "size": 256
+   }
+  ],
+  "out": "icon.ico"
+ },
+ {
+  "ico": [
+   {
+    "svg": "favicon.svg",
+    "size": 16
+   },
+   {
+    "svg": "favicon.svg",
+    "size": 32
+   },
+   {
+    "svg": "favicon.svg",
+    "size": 48
+   }
+  ],
+  "out": "favicon.ico"
+ }
+]

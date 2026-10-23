@@ -1,0 +1,244 @@
+/* Freehand sketch card + its floating tool strip. */
+
+.sketch-card {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-card);
+}
+
+.sketch-card__surface {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  touch-action: none;
+}
+
+.sketch-card__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.sketch-card__svg .is-ink {
+  /* Theme-adaptive ink: dark on light boards, light on dark boards. */
+  fill: var(--text);
+}
+
+/*
+ * In a column the sketch is as wide as the column and keeps the drawing's proportions (the card's
+ * own aspect ratio): the shell's stored height would stretch it, so it is overridden here, and the
+ * resize handle (which could only change that hidden height) is not offered.
+ */
+.card-shell--sketch.in-column {
+  height: auto !important;
+}
+.card-shell--sketch.in-column > .resize-handle {
+  display: none;
+}
+
+/*
+ * Drawings sit on the canvas like hand sketches: an unselected sketch on the canvas only reacts
+ * where something is drawn, so cards underneath an annotation stay clickable.
+ */
+.card-shell--sketch:not(.is-selected):not(.is-editing):not(.in-column) {
+  pointer-events: none;
+}
+.card-shell--sketch:not(.is-selected):not(.is-editing):not(.in-column) .sketch-card__svg path {
+  pointer-events: visible;
+  /* Invisible hit area around thin strokes (stroke is not painted; screen pixels at any zoom). */
+  stroke-width: 10px;
+  vector-effect: non-scaling-stroke;
+}
+.card-shell--sketch .sketch-card__empty {
+  pointer-events: auto;
+}
+
+/* Bounds: faint dashed outline when hovered or selected (no frame otherwise). */
+.card-shell--sketch:hover .sketch-card:not(.is-editing):not(.is-empty) .sketch-card__surface {
+  outline: 1px dashed color-mix(in srgb, var(--text-muted) 35%, transparent);
+  outline-offset: -1px;
+}
+.sketch-card.is-selected:not(.is-editing):not(.is-empty) .sketch-card__surface {
+  outline: 1px dashed color-mix(in srgb, var(--text-muted) 60%, transparent);
+  outline-offset: -1px;
+}
+
+/* Editing: translucent drawing surface with a dashed border. */
+.sketch-card.is-editing .sketch-card__surface {
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  outline: 1.5px dashed var(--border-strong);
+  outline-offset: -1px;
+  cursor: crosshair;
+}
+.sketch-card.is-editing.is-erasing .sketch-card__surface {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='8' fill='%23ffffff' fill-opacity='0.55' stroke='%231f2328' stroke-width='1.5'/%3E%3C/svg%3E")
+      10 10,
+    cell;
+}
+
+.sketch-card__empty,
+.sketch-card__hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sketch-card__empty {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--surface) 40%, transparent);
+}
+.sketch-card__hint {
+  pointer-events: none;
+  opacity: 0.8;
+}
+.world[data-zoom='far'] .sketch-card__empty span {
+  display: none;
+}
+
+/* ---------- tool strip ---------- */
+
+.sketch-strip {
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100vw - 16px);
+  padding: 4px;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+  font-size: 13px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.sketch-strip__group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sketch-strip__sep {
+  width: 1px;
+  height: 20px;
+  margin: 0 3px;
+  background: var(--border);
+}
+
+.sketch-strip .icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: transparent;
+}
+
+.sketch-strip__color {
+  position: relative;
+  width: 26px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+}
+.sketch-strip__color::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.12);
+  transition: transform 0.1s ease;
+}
+.sketch-strip__color[data-ink]::before {
+  background: var(--text);
+}
+.sketch-strip__color[data-light]::before {
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.sketch-strip__color:hover::before {
+  transform: scale(1.12);
+}
+.sketch-strip__color[aria-checked='true']::before {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3.5px var(--text-muted);
+}
+.sketch-strip__color.is-active::before {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3.5px var(--select);
+}
+
+.sketch-strip__size {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-2);
+}
+.sketch-strip__size span {
+  display: block;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sketch-strip__size:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.sketch-strip__size.is-active {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.sketch-strip__done {
+  height: 30px;
+  margin-left: 4px;
+  padding: 0 10px;
+}
+
+.sketch-strip__confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 8px;
+}
+.sketch-strip__confirm span {
+  margin-right: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.sketch-strip__confirm .btn {
+  height: 30px;
+}
+.sketch-strip__danger {
+  /* Fixed red with enough contrast for white text in both themes. */
+  background: #c62f2f;
+  border-color: transparent;
+  color: #fff;
+}
+.sketch-strip__danger:hover {
+  background: #c62f2f;
+  filter: brightness(1.08);
+}

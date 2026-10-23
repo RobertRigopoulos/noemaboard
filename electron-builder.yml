@@ -1,0 +1,103 @@
+# Desktop packaging (electron-builder). Build with `npm run dist:win|mac|linux`; CI releases run
+# .github/workflows/release.yml. NEVER change appId or productName: they determine the userData
+# folder (and with it the IndexedDB storage holding every board) and the Windows install identity.
+appId: org.noema.app
+productName: NoemaBoard
+copyright: Copyright © NoemaBoard contributors (MIT License)
+
+directories:
+  output: release
+  buildResources: build
+
+# Everything (incl. htmlparser2 and electron-updater) is bundled into out/ by electron-vite, so
+# the packaged app ships no node_modules at all.
+files:
+  - out/**/*
+  - package.json
+  - '!**/node_modules/**'
+  - '!**/*.map'
+asar: true
+npmRebuild: false
+nodeGypRebuild: false
+buildDependenciesFromSource: false
+compression: normal
+
+protocols:
+  - name: NoemaBoard invite
+    schemes:
+      - noema
+
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+  grantFileProtocolExtraPrivileges: false
+
+win:
+  # Multi-size .ico with pixel-fitted 16/24/32 px drawings (npm run icons); a PNG would only be downscaled.
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  # No code-signing certificate (free distribution); SmartScreen may warn on first run.
+  signAndEditExecutable: true
+
+nsis:
+  oneClick: true
+  perMachine: false
+  allowElevation: false
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: NoemaBoard
+  artifactName: NoemaBoard-Setup-${version}.${ext}
+
+portable:
+  artifactName: NoemaBoard-Portable-${version}.${ext}
+
+mac:
+  icon: build/icon-mac.png
+  category: public.app-category.productivity
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+    - target: zip
+      arch: [x64, arm64]
+  # Ad-hoc signature (no Apple developer account). Users open it once via right-click → Open.
+  identity: '-'
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  notarize: false
+  artifactName: NoemaBoard-${version}-${arch}.${ext}
+
+dmg:
+  artifactName: NoemaBoard-${version}-${arch}.${ext}
+
+linux:
+  icon: build/icon.png
+  category: Office
+  synopsis: Free visual boards with peer-to-peer collaboration
+  description: Free, open-source visual boards for teams. Real-time peer-to-peer collaboration with no servers, no accounts and no limits.
+  maintainer: NoemaBoard contributors <noreply@example.com>
+  executableName: noema
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+  artifactName: NoemaBoard-${version}-${arch}.${ext}
+
+deb:
+  artifactName: noema_${version}_${arch}.${ext}
+
+toolsets:
+  appimage: '1.0.3'
+
+publish:
+  provider: github
+  releaseType: draft

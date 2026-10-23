@@ -1,0 +1,279 @@
+/* Design tokens + resets. Light theme by default, dark via prefers-color-scheme or [data-theme]. */
+@import '@fontsource-variable/fraunces';
+
+:root {
+  --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+
+  --header-h: 56px;
+  --toolbar-w: 72px;
+
+  --canvas-bg: #eceef1;
+  --canvas-dot: rgba(31, 35, 40, 0.16);
+  --surface: #ffffff;
+  --surface-2: #f6f7f9;
+  --surface-3: #eef0f3;
+  --surface-hover: #f1f3f5;
+  --text: #1f2328;
+  --text-2: #4b5260;
+  --text-muted: #7a8190;
+  --border: #e2e5ea;
+  --border-strong: #cfd4db;
+  --select: #4f7cff;
+  --select-soft: rgba(79, 124, 255, 0.12);
+  --accent: #1f2328;
+  --accent-text: #ffffff;
+  /* --danger is for text and icons; --danger-solid is a fill behind white text. */
+  --danger: #d93f3f;
+  --danger-solid: #d93f3f;
+  --success: #2f9e66;
+  --warning: #c98a00;
+  --link: #2a62d9;
+
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.08), 0 0 0 1px rgba(16, 24, 40, 0.035);
+  --shadow-card-hover: 0 3px 10px rgba(16, 24, 40, 0.1), 0 0 0 1px rgba(16, 24, 40, 0.05);
+  --shadow-drag: 0 14px 34px rgba(16, 24, 40, 0.2), 0 0 0 1px rgba(16, 24, 40, 0.06);
+  --shadow-pop: 0 10px 30px rgba(16, 24, 40, 0.16), 0 0 0 1px rgba(16, 24, 40, 0.06);
+  --radius-card: 3px;
+  --radius: 8px;
+  --radius-sm: 6px;
+
+  /* Card colors: strong = accent strip / swatch, tint = card background */
+  --c-red: #e5484d;
+  --c-red-tint: #fdeded;
+  --c-orange: #f76b15;
+  --c-orange-tint: #feefe5;
+  --c-yellow: #f2c23b;
+  --c-yellow-tint: #fff7d6;
+  --c-green: #30a46c;
+  --c-green-tint: #e7f5ec;
+  --c-teal: #12a594;
+  --c-teal-tint: #e2f5f2;
+  --c-blue: #0090ff;
+  --c-blue-tint: #e5f2ff;
+  --c-purple: #6e56cf;
+  --c-purple-tint: #efebfb;
+  --c-pink: #d6409f;
+  --c-pink-tint: #fbe8f3;
+  --c-brown: #a07553;
+  --c-brown-tint: #f4ede6;
+  --c-grey: #8b8d98;
+  --c-grey-tint: #eff0f2;
+  --c-dark: #2b2d31;
+  --c-dark-tint: #2b2d31;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --canvas-bg: #17191c;
+    --canvas-dot: rgba(255, 255, 255, 0.1);
+    --surface: #24272c;
+    --surface-2: #2b2e34;
+    --surface-3: #33373e;
+    --surface-hover: #30343a;
+    --text: #e7e9ec;
+    --text-2: #c2c7cf;
+    --text-muted: #8d94a0;
+    --border: #383c43;
+    --border-strong: #4a4f58;
+    --select: #6b90ff;
+    --select-soft: rgba(107, 144, 255, 0.18);
+    --accent: #e7e9ec;
+    --accent-text: #17191c;
+    --link: #7ea6ff;
+    /* Lighter text colors keep >= 4.5:1 on --surface; the fill stays dark enough for white text. */
+    --danger: #ff6b6b;
+    --danger-solid: #c93a3a;
+    --warning: #e0a526;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    --shadow-drag: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    --c-red-tint: #3a2324;
+    --c-orange-tint: #3b2a1f;
+    --c-yellow-tint: #3a3420;
+    --c-green-tint: #1f3229;
+    --c-teal-tint: #1c3330;
+    --c-blue-tint: #1d2c3d;
+    --c-purple-tint: #2b2640;
+    --c-pink-tint: #3a2333;
+    --c-brown-tint: #33291f;
+    --c-grey-tint: #2e3036;
+    --c-dark: #0f1012;
+    --c-dark-tint: #0f1012;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --canvas-bg: #17191c;
+  --canvas-dot: rgba(255, 255, 255, 0.1);
+  --surface: #24272c;
+  --surface-2: #2b2e34;
+  --surface-3: #33373e;
+  --surface-hover: #30343a;
+  --text: #e7e9ec;
+  --text-2: #c2c7cf;
+  --text-muted: #8d94a0;
+  --border: #383c43;
+  --border-strong: #4a4f58;
+  --select: #6b90ff;
+  --select-soft: rgba(107, 144, 255, 0.18);
+  --accent: #e7e9ec;
+  --accent-text: #17191c;
+  --link: #7ea6ff;
+  --danger: #ff6b6b;
+  --danger-solid: #c93a3a;
+  --warning: #e0a526;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --shadow-drag: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --c-red-tint: #3a2324;
+  --c-orange-tint: #3b2a1f;
+  --c-yellow-tint: #3a3420;
+  --c-green-tint: #1f3229;
+  --c-teal-tint: #1c3330;
+  --c-blue-tint: #1d2c3d;
+  --c-purple-tint: #2b2640;
+  --c-pink-tint: #3a2333;
+  --c-brown-tint: #33291f;
+  --c-grey-tint: #2e3036;
+  --c-dark: #0f1012;
+  --c-dark-tint: #0f1012;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--canvas-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--link);
+}
+
+:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--select-soft);
+}
+
+.app,
+.app-loading {
+  position: fixed;
+  inset: 0;
+}
+
+/* Shared small UI primitives used across panels and dialogs */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--surface-hover);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: transparent;
+}
+.btn--primary:hover {
+  background: var(--accent);
+  filter: brightness(1.15);
+}
+.btn--ghost {
+  border-color: transparent;
+  background: transparent;
+}
+.btn--danger {
+  color: var(--danger);
+}
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+}
+.icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.icon-btn[aria-pressed='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.input {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  width: 100%;
+}
+.input:focus {
+  outline: 2px solid var(--select);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+.muted {
+  color: var(--text-muted);
+}

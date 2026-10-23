@@ -1,0 +1,9 @@
+.board-glyph {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28%;
+  background: var(--tint, var(--surface-3));
+  color: var(--strong, var(--text-2));
+}

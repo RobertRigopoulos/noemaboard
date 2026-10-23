@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      # --ignore-scripts: the Electron binary is not needed to type-check, test or bundle.
+      - name: Install
+        run: npm ci --ignore-scripts
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Web build
+        run: npx vite build
+
+      - name: Desktop bundle (main, preload, renderer)
+        run: npx electron-vite build
+
+  relay:
+    name: Relay server, Cloudflare adapter, client end-to-end
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            relay/package-lock.json
+
+      - name: Install app
+        run: npm ci --ignore-scripts
+
+      - name: Install relay
+        working-directory: relay
+        run: npm ci
+
+      - name: Typecheck relay
+        working-directory: relay
+        run: npm run typecheck
+
+      - name: Relay tests (Node server)
+        working-directory: relay
+        run: npm test
+
+      - name: Relay tests (Cloudflare adapter on a simulated runtime)
+        working-directory: relay
+        run: npm run test:cloudflare
+
+      # relay/cloudflare has no lockfile; its tooling is only needed for the type-check.
+      - name: Typecheck Cloudflare adapter
+        working-directory: relay/cloudflare
+        run: |
+          npm install --no-audit --no-fund --ignore-scripts
+          npm run typecheck
+
+      # Real relay process + real client code. REQUIRE_RELAY_E2E makes the file fail instead of
+      # silently skipping when the relay's dependencies are missing.
+      - name: Client <-> relay end-to-end
+        run: npx vitest run src/collab/relay/relay.e2e.test.ts
+        env:
+          REQUIRE_RELAY_E2E: '1'
+
+  desktop-smoke:
+    name: Desktop smoke test (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install (with the Electron binary)
+        run: npm ci
+
+      - name: Bundle
+        run: npx electron-vite build
+
+      # Loads the real renderer in a hidden window and checks the bridge, WebCrypto, IndexedDB,
+      # WebRTC and IPC; prints one JSON line and fails the job on any missing capability.
+      - name: Smoke test
+        run: npx electron . --smoke-test

@@ -1,0 +1,129 @@
+/**
+ * Renders the app icon (public/icon.svg) and the tray icons with Electron's own Chromium, so no
+ * image tooling has to be installed. Run with `npm run icons` after changing the artwork.
+ *
+ * Sources:
+ *   public/icon.svg          the app icon; it carries pixel-fitted drawings for 16/24/32 px that its own
+ *                            CSS media queries select, so every size below is rendered from this one file
+ *   build/icon-mac.svg       macOS variant (824 px tile with shadow on the 1024 canvas, Apple's icon grid)
+ *   build/tray-template.svg  macOS menu-bar template glyph (black + alpha only)
+ * Outputs:
+ *   build/icon.png       1024×1024 full-bleed, used for Linux
+ *   build/icon.ico       Windows: 16/24/32/48/64/128 (32-bit BMP) + 256 (PNG)
+ *   build/icon-mac.png   1024×1024 macOS icon, becomes .icns
+ *   electron/icons.ts    small PNGs (tray + Linux window icon) as data URLs for the main process
+ * The artwork itself is generated in design/concept-1 (see design/brand.md).
+ */
+const { app, BrowserWindow } = require('electron')
+const fs = require('node:fs')
+const path = require('node:path')
+
+const root = path.resolve(__dirname, '..')
+const appSvg = fs.readFileSync(path.join(root, 'public', 'icon.svg'), 'utf8')
+const macSvg = fs.readFileSync(path.join(root, 'build', 'icon-mac.svg'), 'utf8')
+const templateSvg = fs.readFileSync(path.join(root, 'build', 'tray-template.svg'), 'utf8')
+
+// The SVG must not carry width/height of its own: they are set here, and its media queries test them.
+function sized(svg, size) {
+  return svg.replace(/<svg\b/, `<svg width="${size}" height="${size}"`)
+}
+
+/** Rasterizes `svg` at size×size; returns a PNG data URL and the raw RGBA pixels (base64). */
+async function render(win, svg, size) {
+  const src = `data:image/svg+xml;base64,${Buffer.from(sized(svg, size)).toString('base64')}`
+  return win.webContents.executeJavaScript(`(async () => {
+    const img = new Image()
+    img.src = ${JSON.stringify(src)}
+    await img.decode()
+    const c = document.createElement('canvas')
+    c.width = c.height = ${size}
+    const ctx = c.getContext('2d')
+    ctx.imageSmoothingQuality = 'high'
+    ctx.drawImage(img, 0, 0, ${size}, ${size})
+    const px = ctx.getImageData(0, 0, ${size}, ${size}).data
+    let bin = ''
+    for (let i = 0; i < px.length; i += 8192) bin += String.fromCharCode.apply(null, px.subarray(i, i + 8192))
+    return { png: c.toDataURL('image/png'), rgba: btoa(bin) }
+  })()`)
+}
+
+const toBuffer = (dataUrl) => Buffer.from(dataUrl.split(',')[1], 'base64')
+
+/** One ICO image as a 32-bit BMP (XOR bitmap bottom-up in BGRA, then an all-zero AND mask). */
+function bmpEntry(rgba, s) {
+  const maskRow = Math.ceil(s / 32) * 4
+  const buf = Buffer.alloc(40 + s * s * 4 + maskRow * s)
+  buf.writeUInt32LE(40, 0)
+  buf.writeInt32LE(s, 4)
+  buf.writeInt32LE(s * 2, 8)
+  buf.writeUInt16LE(1, 12)
+  buf.writeUInt16LE(32, 14)
+  buf.writeUInt32LE(s * s * 4 + maskRow * s, 20)
+  let o = 40
+  for (let y = s - 1; y >= 0; y--)
+    for (let x = 0; x < s; x++) {
+      const i = (y * s + x) * 4
+      buf[o++] = rgba[i + 2]
+      buf[o++] = rgba[i + 1]
+      buf[o++] = rgba[i]
+      buf[o++] = rgba[i + 3]
+    }
+  return buf
+}
+
+/** ICO container: entries = [{ size, data }] sorted by size. */
+function ico(entries) {
+  const head = Buffer.alloc(6 + 16 * entries.length)
+  head.writeUInt16LE(1, 2)
+  head.writeUInt16LE(entries.length, 4)
+  let offset = head.length
+  entries.forEach((e, i) => {
+    const o = 6 + 16 * i
+    head[o] = e.size >= 256 ? 0 : e.size
+    head[o + 1] = e.size >= 256 ? 0 : e.size
+    head.writeUInt16LE(1, o + 4)
+    head.writeUInt16LE(32, o + 6)
+    head.writeUInt32LE(e.data.length, o + 8)
+    head.writeUInt32LE(offset, o + 12)
+    offset += e.data.length
+  })
+  return Buffer.concat([head, ...entries.map((e) => e.data)])
+}
+
+app.whenReady().then(async () => {
+  try {
+    const win = new BrowserWindow({ show: false, webPreferences: { sandbox: true, contextIsolation: true } })
+    await win.loadURL('data:text/html,<!doctype html><title>icons</title>')
+    const png = async (svg, size) => (await render(win, svg, size)).png
+
+    fs.writeFileSync(path.join(root, 'build', 'icon.png'), toBuffer(await png(appSvg, 1024)))
+    fs.writeFileSync(path.join(root, 'build', 'icon-mac.png'), toBuffer(await png(macSvg, 1024)))
+
+    const entries = []
+    for (const size of [16, 24, 32, 48, 64, 128, 256]) {
+      const r = await render(win, appSvg, size)
+      entries.push({ size, data: size <= 128 ? bmpEntry(Buffer.from(r.rgba, 'base64'), size) : toBuffer(r.png) })
+    }
+    fs.writeFileSync(path.join(root, 'build', 'icon.ico'), ico(entries))
+
+    const icons = {
+      TRAY_16: await png(appSvg, 16),
+      TRAY_24: await png(appSvg, 24),
+      TRAY_32: await png(appSvg, 32),
+      TRAY_TEMPLATE_16: await png(templateSvg, 16),
+      TRAY_TEMPLATE_32: await png(templateSvg, 32),
+      WINDOW_ICON_128: await png(appSvg, 128),
+    }
+    const ts = [
+      '// Generated by build/make-icons.cjs (npm run icons). Do not edit by hand.',
+      ...Object.entries(icons).map(([k, v]) => `export const ${k} =\n  '${v}'`),
+      '',
+    ].join('\n')
+    fs.writeFileSync(path.join(root, 'electron', 'icons.ts'), ts)
+    console.log('icons written: build/icon.png, build/icon.ico, build/icon-mac.png, electron/icons.ts')
+    app.exit(0)
+  } catch (err) {
+    console.error(err)
+    app.exit(1)
+  }
+})
