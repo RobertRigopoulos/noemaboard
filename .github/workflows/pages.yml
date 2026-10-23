@@ -1,6 +1,7 @@
-# Deploys the web app to GitHub Pages (Settings → Pages → Source: GitHub Actions).
-# Set the repository variable PUBLIC_URL if you serve it from a custom domain.
-name: Deploy web app
+# Publishes a copy of the front page to GitHub Pages (a well-known address that link previews on
+# LinkedIn and others load reliably). The app itself stays on the main host (repository variable
+# APP_URL, default https://app.noemaboard.workers.dev/app/).
+name: Deploy front page
 
 on:
   push:
@@ -28,24 +29,21 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
-
-      - name: Install
-        run: npm ci --ignore-scripts
 
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v6
 
-      - name: Build
-        run: npm run build:web
+      - name: Build front page
+        run: node scripts/build-pages-site.mjs
         env:
           # base_url is right for project pages, user pages and custom domains alike.
-          VITE_PUBLIC_URL: ${{ vars.PUBLIC_URL || format('{0}/', steps.pages.outputs.base_url) }}
+          SITE_URL: ${{ format('{0}/', steps.pages.outputs.base_url) }}
+          APP_URL: ${{ vars.APP_URL || 'https://app.noemaboard.workers.dev/app/' }}
 
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: pages-dist
 
   deploy:
     needs: build
