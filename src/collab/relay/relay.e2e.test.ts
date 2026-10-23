@@ -264,9 +264,11 @@ describe.skipIf(!HAS_RELAY)('relay end-to-end', () => {
     await waitFor(() => a.conn.connected)
     a.doc.getMap('cards').set('precious', 'data')
     await waitFor(() => a.conn.clean && a.conn.lastSeq === 1)
+    const mark = a.statuses.length
     await r1.stop()
     await waitFor(() => !a.conn.connected, 5000, 'disconnect')
-    expect(a.statuses.some((s) => s.state === 'offline')).toBe(true)
+    // The UI hears about the loss: 'offline', or straight to 'connecting' when the retry fires first.
+    expect(a.statuses.slice(mark).some((s) => s.state === 'offline' || s.state === 'connecting')).toBe(true)
     // Same address, empty storage.
     const r2 = await startRelay({ port: r1.port })
     try {
