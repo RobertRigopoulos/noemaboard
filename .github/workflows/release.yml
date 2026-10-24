@@ -61,7 +61,7 @@ jobs:
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             echo "Release $GITHUB_REF_NAME already exists"
           else
-            gh release create "$GITHUB_REF_NAME" --draft --verify-tag --generate-notes --title "Noema $GITHUB_REF_NAME"
+            gh release create "$GITHUB_REF_NAME" --draft --verify-tag --generate-notes --title "NoemaBoard $GITHUB_REF_NAME"
           fi
 
   build:
@@ -81,7 +81,7 @@ jobs:
     timeout-minutes: 45
     env:
       VITE_PUBLIC_URL: ${{ needs.draft.outputs.public_url }}
-      # Optional team sync server (e.g. https://noema.<you>.workers.dev/relay), from the repository variable.
+      # Optional team sync server (e.g. https://app.<you>.workers.dev/relay), from the repository variable.
       VITE_DEFAULT_RELAY: ${{ vars.DEFAULT_RELAY }}
     steps:
       - uses: actions/checkout@v7
