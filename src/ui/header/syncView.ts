@@ -1,7 +1,7 @@
 /** What the connection pill says, derived from sync + relay status (pure, unit-tested). */
 import { HOME_BOARD_ID } from '../../config'
 import type { LibraryEntry } from '../../collab/library'
-import type { BoardSyncStatus } from '../../collab/sync/status'
+import { SYNC_PROBLEMS, type BoardSyncStatus } from '../../collab/sync/status'
 import type { BoardRelayStatus } from '../../collab/relay/status'
 
 /**
@@ -62,6 +62,13 @@ export function relayText(r: BoardRelayStatus): string {
 const P2P_OFF = 'Peer-to-peer sync is turned off in Settings → Network.'
 
 /**
+ * Problems that only affect direct (peer-to-peer) connections. A connected sync server carries the
+ * board's changes and presence anyway, so they are not worth a warning then. They rank below every
+ * other problem, so hiding one never hides a more important one.
+ */
+const DIRECT_ONLY = new Set<string>([SYNC_PROBLEMS.webrtc, SYNC_PROBLEMS.signaling, SYNC_PROBLEMS.turn, SYNC_PROBLEMS.full])
+
+/**
  * @param p2pEnabled the "Peer-to-peer sync" network setting. When it is off, only a sync server
  *   (relay) can carry changes, so without one a shared board does not sync at all.
  */
@@ -91,15 +98,16 @@ export function describeSync(
     }
   const peers = Math.max(st?.peers ?? 0, relay?.peers ?? 0)
   const relayNote = relay ? ` ${relayText(relay)}` : ''
+  const shown = problem && relay?.state === 'connected' && DIRECT_ONLY.has(problem) ? null : problem
   if (peers > 0)
     return {
       kind: 'live',
       label: `${peers + 1} online`,
-      detail: `Connected to ${peers} other device${peers === 1 ? '' : 's'}. Changes sync instantly.${relayNote}${problem ? ` ${problem}` : ''}`,
+      detail: `Connected to ${peers} other device${peers === 1 ? '' : 's'}. Changes sync instantly.${relayNote}${shown ? ` ${shown}` : ''}`,
       action: 'share',
     }
   if (relay?.state === 'error') return { kind: 'problem', label: 'Sync server issue', detail: relayText(relay), action: 'share' }
-  if (problem) return { kind: 'problem', label: 'Connection issue', detail: problem, action: 'network' }
+  if (shown) return { kind: 'problem', label: 'Connection issue', detail: shown, action: 'network' }
   const lastAt = Math.max(st?.lastSyncAt ?? 0, relay?.lastSyncAt ?? 0)
   const last = lastAt ? ` Last synced ${timeAgo(lastAt)}.` : ''
   if (relay?.state === 'connected')

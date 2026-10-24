@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { LibraryEntry } from '../../collab/library'
+import { SYNC_PROBLEMS } from '../../collab/sync/status'
 import { describeSync, syncScope, timeAgo } from './syncView'
 
 function entry(id: string, parentId: string | null, shared = false): LibraryEntry {
@@ -69,6 +70,50 @@ describe('describeSync', () => {
     expect(down).toMatchObject({ kind: 'problem', action: 'network' })
     expect(down.detail).not.toContain('when someone opens this board')
     expect(describeSync(true, null, 'b', undefined, { ...relay, state: 'connecting' }, false)).toMatchObject({ action: 'network' })
+  })
+  describe('direct-connection problems while the sync server is connected', () => {
+    const relay = { url: 'wss://relay.example.com', state: 'connected' as const, lastSyncAt: 0 }
+    const direct = [SYNC_PROBLEMS.webrtc, SYNC_PROBLEMS.signaling, SYNC_PROBLEMS.turn, SYNC_PROBLEMS.full]
+
+    it('shows Synced instead of a connection issue', () => {
+      for (const problem of direct) {
+        const v = describeSync(true, problem, 'b', { peers: 0, active: true, lastSyncAt: 0 }, relay)
+        expect(v, problem).toMatchObject({ kind: 'relay', label: 'Synced', action: 'share' })
+        expect(v.detail, problem).not.toContain(problem)
+      }
+    })
+    it('leaves them out of the details when teammates are online', () => {
+      for (const problem of direct) {
+        const v = describeSync(true, problem, 'b', { peers: 1, active: true, lastSyncAt: 0 }, { ...relay, peers: 2 })
+        expect(v, problem).toMatchObject({ kind: 'live', label: '3 online' })
+        expect(v.detail, problem).not.toContain(problem)
+      }
+    })
+    it('still shows them when the sync server is not connected, or there is none', () => {
+      for (const problem of direct) {
+        for (const state of ['connecting', 'offline'] as const) {
+          expect(describeSync(true, problem, 'b', undefined, { ...relay, state }), `${problem} / ${state}`).toMatchObject({
+            kind: 'problem',
+            label: 'Connection issue',
+            detail: problem,
+            action: 'network',
+          })
+        }
+        expect(describeSync(true, problem, 'b', { peers: 0, active: true, lastSyncAt: 0 }), problem).toMatchObject({
+          kind: 'problem',
+          detail: problem,
+        })
+      }
+    })
+    it('still shows problems that also affect the sync server', () => {
+      for (const problem of [SYNC_PROBLEMS.version, SYNC_PROBLEMS['tab-version'], SYNC_PROBLEMS.reload, SYNC_PROBLEMS.start]) {
+        expect(describeSync(true, problem, 'b', undefined, relay), problem).toMatchObject({ kind: 'problem', detail: problem })
+        expect(describeSync(true, problem, 'b', undefined, { ...relay, peers: 1 }).detail, problem).toContain(problem)
+      }
+    })
+    it('relies on direct-only problems ranking last, so hiding one never hides a more important one', () => {
+      expect(Object.values(SYNC_PROBLEMS).slice(-direct.length).sort()).toEqual([...direct].sort())
+    })
   })
   it('says "Only you" with the last sync time', () => {
     const v = describeSync(true, null, 'b', { peers: 0, active: true, lastSyncAt: Date.now() - 5 * 60_000 })
