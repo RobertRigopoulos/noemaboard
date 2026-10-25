@@ -1,0 +1,27 @@
+{
+  "name": "noemaboard-trailer",
+  "private": true,
+  "description": "Social media trailer for NoemaBoard: real app footage recorded by script, edited with Remotion.",
+  "type": "module",
+  "scripts": {
+    "assets": "node scripts/copy-assets.mjs",
+    "record": "node scripts/copy-assets.mjs && node ../node_modules/electron/cli.js record/record.cjs",
+    "music": "node music/compose.mjs",
+    "studio": "node scripts/copy-assets.mjs && node music/compose.mjs && remotion studio",
+    "render": "node scripts/copy-assets.mjs && node music/compose.mjs && node scripts/render.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.538",
+    "@remotion/fonts": "4.0.538",
+    "@remotion/transitions": "4.0.538",
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "4.0.538"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "~6.0.3"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+# Recorded footage, the music and rendered videos are regenerated (npm run record / music / render).
+public/clips/
+public/brand/
+public/music/
+out/
