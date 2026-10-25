@@ -1486,6 +1486,26 @@ export function copyBoardContent(
   return forks
 }
 
+/**
+ * Fills an empty board doc with a copy of Home's own cards (notes, to-dos, images...), for full
+ * backups: Home itself is never exported as a board. Board cards are left out, since every board is
+ * backed up as itself; lines and comments pinned to them come along unpinned. Keeps the layout,
+ * Unsorted drawer included. Returns how many cards were copied (0 leaves `dst` untouched).
+ */
+export function copyHomeNotes(home: Y.Doc, dst: Y.Doc, opts: { id: string; title: string; parentId: string; userId: string }): number {
+  const sources: CardMap[] = []
+  forEachActiveCard(home, (m) => {
+    if (m.get('type') !== 'board') sources.push(m)
+  })
+  if (!sources.length) return 0
+  initBoardDoc(dst, { id: opts.id, title: opts.title, parentId: opts.parentId }, opts.userId)
+  const { cards } = cloneCardsWithNewIds(sources)
+  for (const d of cards) resetCopiedFields(d, true, true)
+  cards.sort((a, b) => num(a.data.z, 0) - num(b.data.z, 0))
+  insertClonedCards(dst, cards, null, opts.userId)
+  return cards.length
+}
+
 // ---------------------------------------------------------------------------
 // Clipboard snapshots: encoded as a Yjs update of a scratch doc so rich text survives exactly.
 

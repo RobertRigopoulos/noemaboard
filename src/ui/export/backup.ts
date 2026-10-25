@@ -17,9 +17,9 @@ import { getLocalBlob, MAX_BLOB_BYTES, putVerifiedBlob } from '../../collab/blob
 import { isValidBlobHash } from '../../collab/crypto'
 import { getUser } from '../../collab/identity'
 import { getLibraryEntry, useLibrary } from '../../collab/library'
-import { createCard, getCards, isTrashed, readCard, readMeta, SYSTEM_ORIGIN } from '../../model/board'
+import { copyHomeNotes, createCard, getCards, isTrashed, readCard, readMeta, SYSTEM_ORIGIN } from '../../model/board'
 import { boardBlobHashes } from '../../model/blobRefs'
-import { isValidId } from '../../model/ids'
+import { isValidId, newBoardId, newSecret } from '../../model/ids'
 import { moveToUnsorted } from '../../model/unsorted'
 
 export const BACKUP_FORMAT = 'noema-backup'
@@ -256,13 +256,41 @@ export interface ExportOptions {
   secrets?: Map<string, string>
   /** Reports the number of boards collected so far. */
   onProgress?: (boards: number) => void
+  /** Also back up the cards placed directly on Home, as one extra board (full backups). */
+  homeNotes?: boolean
+}
+
+/** Title of the board that carries Home's own cards in a full backup. */
+export const HOME_NOTES_TITLE = 'Notes from Home'
+
+/**
+ * Home's own cards (everything but its boards) copied into a new board, so a backup can carry them
+ * like any other board: importing it, in this or any older version, puts it in Home's Unsorted
+ * drawer. Null when Home holds nothing but boards.
+ */
+async function homeNotesBoard(): Promise<{ board: BackupBoard; update: Uint8Array; hashes: string[] } | null> {
+  const id = newBoardId()
+  const dst = new Y.Doc({ guid: id })
+  try {
+    const copied = await docs.withDoc(HOME_BOARD_ID, (home) =>
+      copyHomeNotes(home, dst, { id, title: HOME_NOTES_TITLE, parentId: HOME_BOARD_ID, userId: getUser().id }),
+    )
+    if (!copied) return null
+    return {
+      board: { id, secret: newSecret(), title: HOME_NOTES_TITLE, parentId: HOME_BOARD_ID },
+      update: Y.encodeStateAsUpdate(dst),
+      hashes: [...boardBlobHashes(dst)],
+    }
+  } finally {
+    dst.destroy()
+  }
 }
 
 /** Builds a backup of the given boards and every board nested inside them. */
 export async function exportBackup(boardIds: string[], opts: ExportOptions = {}): Promise<ExportResult> {
   const { onProgress } = opts
   const roots = boardIds.filter((id) => isValidId(id))
-  if (!roots.length) throw new BackupError('There are no boards to back up.')
+  if (!roots.length && !opts.homeNotes) throw new BackupError('There are no boards to back up.')
   const boards: BackupBoard[] = []
   const updates = new Map<string, Uint8Array>()
   const hashes = new Set<string>()
@@ -302,7 +330,18 @@ export async function exportBackup(boardIds: string[], opts: ExportOptions = {})
     })
     onProgress?.(boards.length)
   }
-  if (!boards.length) throw new BackupError('These boards could not be read.')
+  const extraRoots: string[] = []
+  if (opts.homeNotes && boards.length < BACKUP_LIMITS.boards) {
+    const notes = await homeNotesBoard()
+    if (notes) {
+      boards.push(notes.board)
+      updates.set(notes.board.id, notes.update)
+      for (const h of notes.hashes) hashes.add(h)
+      extraRoots.push(notes.board.id)
+      onProgress?.(boards.length)
+    }
+  }
+  if (!boards.length) throw new BackupError(roots.length ? 'These boards could not be read.' : 'There is nothing to back up yet.')
 
   const blobData = new Map<string, Uint8Array>()
   const blobMeta: BackupBlob[] = []
@@ -333,7 +372,7 @@ export async function exportBackup(boardIds: string[], opts: ExportOptions = {})
     createdAt: Date.now(),
     app: APP_NAME,
     boards,
-    rootIds: roots.filter((id) => boards.some((b) => b.id === id)),
+    rootIds: [...roots.filter((id) => boards.some((b) => b.id === id)), ...extraRoots],
     blobs: blobMeta,
   }
   return { bytes: packBackup(manifest, updates, blobData), boards: boards.length, blobs: blobData.size, missingBlobs: missing }

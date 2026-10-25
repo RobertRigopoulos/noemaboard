@@ -12,6 +12,8 @@ import {
   BackupError,
   backupFileName,
   exportBackup,
+  HOME_NOTES_TITLE,
+  homeBoards,
   importBackup,
   packBackup,
   safeFileName,
@@ -289,6 +291,68 @@ describe('exportBackup / importBackup', () => {
     const homeCard = await docs.withDoc('home', (d) => Array.from(getCards(d).values()).find((m) => !isTrashed(m) && m.get('boardId') === id))
     expect(homeCard?.get('unsorted')).toBe(true)
     expect(typeof homeCard?.get('order')).toBe('string')
+  })
+
+  it('carries the cards placed directly on Home as an extra board in a full backup', async () => {
+    const user = 'tester'
+    const boardId = 'homeNotesPlans1'
+    const boardSecret = newSecret()
+    const pic = await putBlob(new Blob([new Uint8Array([4, 4, 4, 2])], { type: 'image/png' }))
+    await docs.withDoc(boardId, (d) => initBoardDoc(d, { id: boardId, title: 'Plans', parentId: 'home' }, user))
+    useLibrary.getState().upsert({ id: boardId, secret: boardSecret, title: 'Plans', parentId: 'home' })
+    await docs.withDoc('home', (d) => initBoardDoc(d, { id: 'home', title: 'Home' }, user))
+
+    // Home with only boards on it: nothing extra.
+    const onlyBoards = await homeBoards()
+    const before = unpackBackup((await exportBackup(onlyBoards.ids, { secrets: onlyBoards.secrets, homeNotes: true })).bytes)
+    expect(before.manifest.boards.some((b) => b.title === HOME_NOTES_TITLE)).toBe(false)
+
+    let noteId = ''
+    await docs.withDoc('home', (d) => {
+      noteId = createCard(d, 'note', { x: 9100, y: 9100, color: 'yellow' }, user)
+      createCard(d, 'image', { x: 9500, y: 9100, blob: pic.hash, name: 'p.png', mime: 'image/png' }, user)
+      createCard(d, 'note', { x: 9100, y: 9500, unsorted: true, order: 'a0' }, user)
+      const boardCard = createCard(d, 'board', { x: 9900, y: 9100, boardId, secret: boardSecret, title: 'Plans' }, user)
+      createCard(d, 'line', { from: { card: noteId, x: 9100, y: 9100 }, to: { card: boardCard, x: 9900, y: 9100 } }, user)
+    })
+
+    const { ids, secrets } = await homeBoards()
+    expect(ids).toContain(boardId)
+    const res = await exportBackup(ids, { secrets, homeNotes: true })
+    const unpacked = unpackBackup(res.bytes)
+    const notesBoard = unpacked.manifest.boards.find((b) => b.title === HOME_NOTES_TITLE)
+    if (!notesBoard) throw new Error('no notes board')
+    expect(notesBoard.parentId).toBe('home')
+    expect(unpacked.manifest.rootIds).toEqual(expect.arrayContaining([boardId, notesBoard.id]))
+    expect(unpacked.manifest.blobs.map((b) => b.hash)).toContain(pic.hash)
+
+    const scratch = new Y.Doc({ guid: notesBoard.id })
+    Y.applyUpdate(scratch, unpacked.updates.get(notesBoard.id)!)
+    const copied = Array.from(getCards(scratch).values()).filter((m) => !isTrashed(m))
+    expect(copied.some((m) => m.get('type') === 'board')).toBe(false)
+    const notes = copied.filter((m) => m.get('type') === 'note')
+    expect(notes.map((m) => [m.get('x'), m.get('y')])).toEqual(expect.arrayContaining([[9100, 9100], [9100, 9500]]))
+    expect(notes.find((m) => m.get('y') === 9500)?.get('unsorted')).toBe(true)
+    expect(copied.some((m) => m.get('type') === 'image' && m.get('blob') === pic.hash)).toBe(true)
+    // Fresh card ids; the line keeps its note end and lets go of the board it pointed at.
+    const copiedNote = notes.find((m) => m.get('y') === 9100)!
+    expect(copiedNote.get('id')).not.toBe(noteId)
+    const line = copied.find((m) => m.get('type') === 'line')!
+    expect(line.get('from')).toMatchObject({ card: copiedNote.get('id') })
+    expect(line.get('to')).toMatchObject({ card: null, x: 9900, y: 9100 })
+    scratch.destroy()
+
+    // On another device the notes arrive as a board in Home's Unsorted drawer.
+    await docs.destroyLocal(notesBoard.id)
+    const summary = await importBackup(new Blob([res.bytes as Uint8Array<ArrayBuffer>]))
+    expect(summary.skipped).toBe(0)
+    expect(useLibrary.getState().entries[notesBoard.id]).toMatchObject({ secret: notesBoard.secret, parentId: 'home', title: HOME_NOTES_TITLE })
+    const homeCard = await docs.withDoc('home', (d) =>
+      Array.from(getCards(d).values()).find((m) => !isTrashed(m) && m.get('boardId') === notesBoard.id),
+    )
+    expect(homeCard?.get('unsorted')).toBe(true)
+    const arrived = await docs.withDoc(notesBoard.id, (d) => Array.from(getCards(d).values()).filter((m) => m.get('type') === 'note').length)
+    expect(arrived).toBeGreaterThanOrEqual(2)
   })
 
   it('skips damaged board data', async () => {

@@ -101,11 +101,15 @@ export function downloadBoardBackup(doc: Y.Doc) {
 export function downloadFullBackup() {
   return run('Backup', async () => {
     const { ids, secrets } = await homeBoards()
-    if (!ids.length) {
-      toast('There are no boards to back up yet.')
+    // Every board on Home, plus the notes placed directly on Home.
+    const res = await exportBackup(ids, { secrets, homeNotes: true }).catch((e: unknown) => {
+      if (!ids.length && e instanceof BackupError) return null
+      throw e
+    })
+    if (!res) {
+      toast('There is nothing to back up yet.')
       return
     }
-    const res = await exportBackup(ids, { secrets })
     if (await saveFile(backupFileName('All boards'), res.bytes, 'application/zip')) toast(describeExport(res), 'success', 6000)
   })
 }
