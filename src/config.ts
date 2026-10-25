@@ -37,6 +37,12 @@ export const APP_VERSION: string = (import.meta.env.VITE_APP_VERSION as string |
 /** Public source repository. Set this after publishing the project (used for docs and "About" links). */
 export const REPO_URL = 'https://github.com/RobertRigopoulos/noemaboard'
 
+/** The public website (front page); the web app is at /app/ there. */
+export const WEBSITE_URL = 'https://noemaboard.app'
+
+/** Where the public web app lived until October 2026. public/moved.js sends new visitors on to WEBSITE_URL. */
+export const OLD_APP_URL = 'https://app.noemaboard.workers.dev/app/'
+
 /** Community server where people report problems and suggest ideas (a never-expiring Discord invite). */
 export const COMMUNITY_URL = 'https://discord.gg/4gcUz2GP3w'
 

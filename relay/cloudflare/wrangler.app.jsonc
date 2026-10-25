@@ -9,6 +9,13 @@
   "name": "app",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-01",
+  // The main address. Listing it here makes this file the source of truth: a deploy removes any
+  // other custom domain attached to this Worker in the dashboard.
+  "routes": [{ "pattern": "noemaboard.app", "custom_domain": true }],
+  // The first address (app.noemaboard.workers.dev) must stay up: people who made boards there keep
+  // them there, and older desktop apps sync through its /relay. Without this line, listing routes
+  // above would switch it off.
+  "workers_dev": true,
   "assets": {
     "directory": "../../deploy-dist",
     "not_found_handling": "404-page",

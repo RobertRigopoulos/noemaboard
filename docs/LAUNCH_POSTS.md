@@ -3,7 +3,11 @@
 Ready-to-paste drafts. Edit them freely: they read best in your own voice.
 
 Before posting:
-- Link to the **front page**: https://robertrigopoulos.github.io/noemaboard/ (LinkedIn shows a preview for this address; the Cloudflare address https://app.noemaboard.workers.dev shows the same page)
+- Link to the **front page**: https://noemaboard.app
+  - To see the preview before posting, paste the link into LinkedIn's Post Inspector
+    (https://www.linkedin.com/post-inspector/).
+  - If LinkedIn ever shows no preview for it, use https://robertrigopoulos.github.io/noemaboard/
+    instead: it shows the same preview and forwards people to noemaboard.app.
 - **Never post a board invite link.** Anyone with an invite link can edit that board.
 - **Attach a short screen recording** (30–60 seconds) of two windows editing the same board at
   once. On Windows: *Snipping Tool → Record*. Video gets far more reach than a plain link.
@@ -32,7 +36,7 @@ Before posting:
 > It's named after *noema*, the Greek word for "a thought", because that's what a board is:
 > a place to lay your thoughts out next to each other.
 >
-> Try it here: https://robertrigopoulos.github.io/noemaboard/
+> Try it here: https://noemaboard.app
 >
 > It's early, and I'd love feedback from anyone who plans projects, makes moodboards, or
 > brainstorms with a team. What would you use it for?
@@ -54,13 +58,13 @@ Before posting:
 >
 > No accounts. No subscription. No limits. Open source.
 >
-> https://robertrigopoulos.github.io/noemaboard/
+> https://noemaboard.app
 
 **Thread version:**
 
 > 1/ I built a free, open-source visual board for teams: NoemaBoard.
 > Endless canvas, notes, images, links, to-dos, columns, boards inside boards, all edited
-> together live. https://robertrigopoulos.github.io/noemaboard/
+> together live. https://noemaboard.app
 >
 > 2/ No accounts and no subscription. Share a board with a link and your teammates join from
 > any browser.
@@ -74,7 +78,17 @@ Before posting:
 
 ---
 
+## New address (comment under the first post, or a Discord announcement)
+
+> NoemaBoard has its own address now: https://noemaboard.app
+>
+> The old links keep working and take you there. If you already made boards at the old address,
+> they're still there: open https://app.noemaboard.workers.dev/app/ and the note at the top shows
+> how to bring them over in two clicks.
+
+---
+
 ## Short blurb (for bios, comments, DMs)
 
 > NoemaBoard: free visual boards for your ideas and your team. No accounts, no limits,
-> real-time collaboration. https://robertrigopoulos.github.io/noemaboard/
+> real-time collaboration. https://noemaboard.app

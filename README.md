@@ -7,7 +7,7 @@ in real time**. No accounts, no subscriptions, no card limits, and no server you
 > NoemaBoard is an independent open-source project inspired by visual board tools such as
 > Milanote. It is not affiliated with, endorsed by, or connected to Milanote or its makers.
 
-**Try it:** https://app.noemaboard.workers.dev · **Download:** [latest release](https://github.com/RobertRigopoulos/noemaboard/releases/latest) · **Found a problem?** [Tell us on Discord](https://discord.gg/4gcUz2GP3w) or [open an issue](https://github.com/RobertRigopoulos/noemaboard/issues/new/choose)
+**Try it:** https://noemaboard.app · **Download:** [latest release](https://github.com/RobertRigopoulos/noemaboard/releases/latest) · **Found a problem?** [Tell us on Discord](https://discord.gg/4gcUz2GP3w) or [open an issue](https://github.com/RobertRigopoulos/noemaboard/issues/new/choose)
 
 ---
 
@@ -86,7 +86,7 @@ monthly fees. NoemaBoard works differently:
 
 1. **Install the desktop app** (Windows, macOS or Linux) from the
    [Releases page](../../releases/latest), or use the web version at
-   https://app.noemaboard.workers.dev/app/.
+   https://noemaboard.app/app/.
    - Windows may warn about an "unrecognised app". Click **More info → Run anyway**: the app isn't
      code-signed yet.
    - macOS: open the app once, then go to **System Settings → Privacy & Security → Open Anyway**.

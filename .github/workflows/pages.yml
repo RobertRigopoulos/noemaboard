@@ -1,6 +1,7 @@
-# Publishes a copy of the front page to GitHub Pages (a well-known address that link previews on
-# LinkedIn and others load reliably). The app itself stays on the main host (repository variable
-# APP_URL, default https://app.noemaboard.workers.dev/app/).
+# Publishes a copy of the front page to GitHub Pages. It was the address shared on LinkedIn before
+# NoemaBoard had its own domain: it keeps its link preview and forwards visitors to the main site
+# (repository variables SITE_HOME, default https://noemaboard.app/, and APP_URL, default
+# https://noemaboard.app/app/).
 name: Deploy front page
 
 on:
@@ -39,7 +40,8 @@ jobs:
         env:
           # base_url is right for project pages, user pages and custom domains alike.
           SITE_URL: ${{ format('{0}/', steps.pages.outputs.base_url) }}
-          APP_URL: ${{ vars.APP_URL || 'https://app.noemaboard.workers.dev/app/' }}
+          APP_URL: ${{ vars.APP_URL || 'https://noemaboard.app/app/' }}
+          SITE_HOME: ${{ vars.SITE_HOME || 'https://noemaboard.app/' }}
 
       - uses: actions/upload-pages-artifact@v5
         with:

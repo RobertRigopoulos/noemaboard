@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Builds everything that is deployed to https://app.noemaboard.workers.dev/ into deploy-dist/:
+ * Builds everything that is deployed to https://noemaboard.app/ (also still served at the old
+ * address https://app.noemaboard.workers.dev/) into deploy-dist/:
  *
  *   deploy-dist/index.html, styles.css, main.js, og.png, assets/...   the front page (site/)
  *   deploy-dist/app/                                                  the web app (Vite build)

@@ -7,10 +7,12 @@
 <html lang="en" data-repo="https://github.com/RobertRigopoulos/noemaboard">
 <head>
   <meta charset="utf-8">
+  <!-- Must stay first: at NoemaBoard's old address it moves new visitors to noemaboard.app. -->
+  <script src="app/moved.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>NoemaBoard: free visual boards you edit together</title>
   <meta name="description" content="An endless canvas for notes, images, links and to-dos. Share a link and edit the same board live with your team. Free and open source, with no accounts and no limits.">
-  <link rel="canonical" href="https://app.noemaboard.workers.dev/">
+  <link rel="canonical" href="https://noemaboard.app/">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
@@ -21,17 +23,17 @@
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="NoemaBoard">
-  <meta property="og:url" content="https://app.noemaboard.workers.dev/">
+  <meta property="og:url" content="https://noemaboard.app/">
   <meta property="og:title" content="NoemaBoard: lay out your ideas, together">
   <meta property="og:description" content="Free visual boards for notes, images, links and to-dos, edited live with your team. No accounts, no limits, open source.">
-  <meta property="og:image" content="https://app.noemaboard.workers.dev/og.png">
+  <meta property="og:image" content="https://noemaboard.app/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="NoemaBoard: lay out your ideas, together. A board with notes, a to-do list and two teammates' cursors.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NoemaBoard: lay out your ideas, together">
   <meta name="twitter:description" content="Free visual boards for notes, images, links and to-dos, edited live with your team. No accounts, no limits, open source.">
-  <meta name="twitter:image" content="https://app.noemaboard.workers.dev/og.png">
+  <meta name="twitter:image" content="https://noemaboard.app/og.png">
   <meta name="twitter:image:alt" content="NoemaBoard: lay out your ideas, together. A board with notes, a to-do list and two teammates' cursors.">
 
   <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -44,7 +46,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "NoemaBoard",
-    "url": "https://app.noemaboard.workers.dev/",
+    "url": "https://noemaboard.app/",
     "applicationCategory": "ProductivityApplication",
     "operatingSystem": "Web, Windows, macOS, Linux",
     "description": "Free, open-source visual boards for notes, images, links and to-dos, edited together in real time.",
@@ -513,7 +515,7 @@
 
           <div class="keylink">
             <p class="keylink__label"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg>Where the key lives</p>
-            <p class="keylink__url"><span class="keylink__addr">app.noemaboard.workers.dev/app/</span><span class="keylink__key">#/join/k7Fq2wL9…</span></p>
+            <p class="keylink__url"><span class="keylink__addr">noemaboard.app/app/</span><span class="keylink__key">#/join/k7Fq2wL9…</span></p>
             <div class="keylink__legend">
               <p><span class="swatch swatch--addr" aria-hidden="true"></span>The address: this part reaches the server.</p>
               <p><span class="swatch swatch--key" aria-hidden="true"></span>After the #: holds the board's key. Browsers never send this part to any server.</p>
@@ -595,6 +597,10 @@
           <details>
             <summary>Can I host it myself?</summary>
             <p>Yes. NoemaBoard is open source under the MIT license. You can publish your own copy of the web app together with its sync service on a free hosting plan, or run the sync server on any computer you trust.</p>
+          </details>
+          <details>
+            <summary>I used NoemaBoard at app.noemaboard.workers.dev. Where are my boards?</summary>
+            <p>Still there. NoemaBoard moved to noemaboard.app, and your browser keeps boards separately for each address. To bring them here, open <a href="https://app.noemaboard.workers.dev/app/">the old address</a> and choose <strong>Export a full backup</strong> in the note at the top. Then open NoemaBoard here and choose <strong>Import a backup</strong> in the NoemaBoard menu. Shared boards also come back on their own when you open their invite links. The desktop apps keep everything as it was.</p>
           </details>
           <details>
             <summary>Found a problem or have an idea?</summary>

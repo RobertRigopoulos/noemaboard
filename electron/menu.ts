@@ -1,7 +1,7 @@
 /** Native application menu. Edit roles matter: without them copy/paste shortcuts fail on macOS. */
 import { app, Menu, shell, type MenuItemConstructorOptions } from 'electron'
 
-export const PROJECT_URL = 'https://github.com/RobertRigopoulos/noemaboard'
+export const PROJECT_URL = 'https://noemaboard.app'
 /** Where people report problems and suggest ideas (same as COMMUNITY_URL in src/config.ts). */
 const COMMUNITY_URL = 'https://discord.gg/4gcUz2GP3w'
 

@@ -6,6 +6,7 @@ import { SettingsDialog } from './dialogs/SettingsDialog'
 import { ShortcutsDialog } from './dialogs/ShortcutsDialog'
 import { Toasts } from './dialogs/Toasts'
 import { StorageBanner } from './dialogs/StorageBanner'
+import { MovedBanner } from './dialogs/MovedBanner'
 
 export function AppOverlays({ joinError, onDismissJoinError }: { joinError: string | null; onDismissJoinError: () => void }) {
   const dialog = useDialogs((s) => s.dialog)
@@ -18,6 +19,7 @@ export function AppOverlays({ joinError, onDismissJoinError }: { joinError: stri
       {/* Last so the first-run name prompt stacks above anything else. */}
       <ProfileDialog open={dialog === 'profile'} onClose={() => useDialogs.getState().dialog === 'profile' && close()} />
       <Toasts joinError={joinError} onDismissJoinError={onDismissJoinError} />
+      <MovedBanner />
       <StorageBanner />
     </>
   )

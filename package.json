@@ -7,7 +7,7 @@
   "private": true,
   "type": "module",
   "main": "out/main/index.cjs",
-  "homepage": "https://github.com/RobertRigopoulos/noemaboard",
+  "homepage": "https://noemaboard.app",
   "author": {
     "name": "NoemaBoard contributors",
     "email": "noreply@example.com"

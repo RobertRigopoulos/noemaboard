@@ -1,0 +1,16 @@
+// www.noemaboard.app: sends every request to https://noemaboard.app (same path and query; browsers
+// keep the part after # themselves). A Worker of its own, so the main one keeps serving its static
+// files without running any code.
+//
+// Deploy from relay/cloudflare (rarely needed; it never changes):
+//   npx wrangler deploy -c wrangler.www.jsonc
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "www",
+  "main": "src/www.ts",
+  "compatibility_date": "2025-09-01",
+  "routes": [{ "pattern": "www.noemaboard.app", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false }
+}

@@ -148,3 +148,42 @@
 .storage-banner .btn:hover {
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* At the old web address: where NoemaBoard lives now (below the storage warning if both show). */
+.moved-banner {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--header-h) + 8px);
+  transform: translateX(-50%);
+  z-index: 18900;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  width: max-content;
+  max-width: min(780px, calc(100vw - 32px));
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: var(--shadow-pop);
+}
+.moved-banner__icon {
+  flex: none;
+  color: var(--accent);
+}
+.moved-banner__text {
+  flex: 1 1 260px;
+}
+.moved-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.moved-banner a.btn {
+  text-decoration: none;
+}

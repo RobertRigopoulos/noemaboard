@@ -47,6 +47,28 @@ npx wrangler secret put ACCESS_KEY -c wrangler.app.jsonc
 Then rebuild the apps with the key added to the relay address
 (`…/relay?key=YOUR_KEY` in `VITE_DEFAULT_RELAY`).
 
+## Use your own domain (optional, costs money)
+
+A domain is the only part of this setup that costs money: about $10–15 a year, for example from
+Cloudflare (*Domain Registration → Register Domains*), which sells at cost. NoemaBoard's own copy
+uses `noemaboard.app`:
+
+1. In `relay/cloudflare/wrangler.app.jsonc`, list the domain under `routes` and keep the
+   workers.dev address on. Without `"workers_dev": true`, listing routes switches it off:
+   ```jsonc
+   "routes": [{ "pattern": "example.com", "custom_domain": true }],
+   "workers_dev": true,
+   ```
+2. Run `npm run deploy:cloudflare`. Cloudflare creates the DNS record and the certificate.
+3. Optional: `www.example.com` → `example.com` with the small redirect Worker in
+   `relay/cloudflare/wrangler.www.jsonc` (change the address in it and in `src/www.ts`).
+4. Point the desktop apps at the new address (see below) and publish a new release.
+
+Browsers keep boards separately for each address, so people who used the old address keep their
+boards there until they move them with a backup (*Export a full backup*, then *Import a backup*).
+NoemaBoard's own copy also sends new visitors from its old address to the new one
+(`public/moved.js`; it does nothing at any other address).
+
 ## Desktop app
 
 Local desktop builds read `.env.production.local`, which is not committed:
@@ -55,6 +77,8 @@ Local desktop builds read `.env.production.local`, which is not committed:
 VITE_PUBLIC_URL=https://app.<your-subdomain>.workers.dev/app/
 VITE_DEFAULT_RELAY=https://app.<your-subdomain>.workers.dev/relay
 ```
+
+(With your own domain: `https://example.com/app/` and `https://example.com/relay`.)
 
 For installers built by GitHub Actions, set the same two values as repository variables:
 *Settings → Secrets and variables → Actions → Variables*, named `PUBLIC_URL` and `DEFAULT_RELAY`.

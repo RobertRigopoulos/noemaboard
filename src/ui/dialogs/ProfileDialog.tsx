@@ -1,5 +1,7 @@
 /** Your name and colour, shown to people you share boards with. Required on first run. */
 import { useId, useRef, useState, type KeyboardEvent } from 'react'
+import { OLD_APP_URL } from '../../config'
+import { atNewAddress, MOVE_HINT_UNTIL } from '../../app/moved'
 import { USER_COLORS, useIdentity } from '../../collab/identity'
 import { toast } from '../toast'
 import { Avatar } from '../header/Avatar'
@@ -130,6 +132,15 @@ export function ProfileDialog({ open, onClose }: { open: boolean; onClose: () =>
           onClose()
         }}
       />
+      {needsName && atNewAddress() && Date.now() < MOVE_HINT_UNTIL && (
+        <p className="dlg-small" style={{ marginTop: 14 }}>
+          Used NoemaBoard before at app.noemaboard.workers.dev? Your boards are still there:{' '}
+          <a href={OLD_APP_URL} target="_blank" rel="noopener noreferrer">
+            open the old address
+          </a>{' '}
+          to move them here.
+        </p>
+      )}
     </Dialog>
   )
 }
