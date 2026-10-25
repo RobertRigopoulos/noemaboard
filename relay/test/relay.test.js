@@ -2,12 +2,34 @@
 import { after, before, describe, test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash, randomBytes } from 'node:crypto'
+import http from 'node:http'
 import WebSocket from 'ws'
 import { CLOSE, ERR, HELLO_PROBE, MSG, encodeCompact, encodeHello, encodePush, Encoder } from '../src/protocol.js'
 import { createRelayServer } from '../src/server.js'
 import { TestClient, bytes, randomRoom, randomToken, spawnRelay, tempDir } from './helpers.js'
 
 const sha = (/** @type {Uint8Array} */ b) => createHash('sha256').update(b).digest('hex')
+
+/**
+ * Starts an upload that declares `size` bytes but sends only a first chunk, and resolves with the
+ * status the relay answers before the rest arrives. Sending the whole body with fetch() would race
+ * the relay closing the connection on a refused upload (EPIPE / ECONNRESET instead of the status).
+ * @param {string} url @param {Record<string, string>} headers @param {number} size
+ * @returns {Promise<number>}
+ */
+function statusOfDeclaredUpload(url, headers, size) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(url, { method: 'PUT', headers: { ...headers, 'content-length': String(size) } }, (res) => {
+      resolve(res.statusCode ?? 0)
+      res.resume()
+      req.destroy()
+    })
+    req.on('error', reject) // ignored once the status has arrived
+    // A relay that waits for the rest instead of refusing would otherwise hang the test.
+    req.setTimeout(5000, () => req.destroy(new Error('the relay did not answer before the upload finished')))
+    req.write(Buffer.alloc(Math.min(size, 1024)))
+  })
+}
 
 describe('relay (spawned CLI)', () => {
   /** @type {Awaited<ReturnType<typeof spawnRelay>>} */
@@ -210,9 +232,8 @@ describe('relay (spawned CLI)', () => {
     const ws = await TestClient.join(relay.ws, { roomId, token })
     await ws.client.close()
 
-    const huge = randomBytes(2 * 1024 * 1024 + 10)
-    const tooBig = await fetch(`${relay.http}/blob/${roomId}/${sha(huge)}`, { method: 'PUT', body: huge, headers: auth })
-    assert.equal(tooBig.status, 413)
+    // Refused from the declared size alone, before the relay reads any of it.
+    assert.equal(await statusOfDeclaredUpload(`${relay.http}/blob/${roomId}/${sha(randomBytes(4))}`, auth, 2 * 1024 * 1024 + 10), 413)
   })
 
   test('state survives a restart', async () => {
