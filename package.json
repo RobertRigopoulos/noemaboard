@@ -1,7 +1,7 @@
 {
   "name": "noema",
   "productName": "NoemaBoard",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Free, open-source visual boards for teams. Real-time, end-to-end encrypted collaboration with no accounts and no limits.",
   "license": "MIT",
   "private": true,
