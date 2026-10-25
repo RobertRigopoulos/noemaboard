@@ -150,6 +150,7 @@ Further reading:
 - [src/collab/sync/README.md](src/collab/sync/README.md): the peer-to-peer protocol.
 - [docs/RELAY.md](docs/RELAY.md): the optional sync server.
 - [electron/README.md](electron/README.md): the desktop shell, packaging and security model.
+- [trailer/README.md](trailer/README.md): how the social media trailer is recorded, scored and rendered.
 
 ### Project layout
 
@@ -162,6 +163,7 @@ src/collab       local storage, invite links, presence, peer-to-peer sync, optio
 src/ui           header, toolbar, menus, dialogs, export/backup, search
 electron         desktop app shell
 relay            optional self-hosted sync server (Node.js, Docker, Cloudflare Workers)
+trailer          social media trailer: scripted app footage and music, edited with Remotion
 ```
 
 ## Privacy & security
